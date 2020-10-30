@@ -1,4 +1,4 @@
-package me.mooy1.slimequest.quests;
+package me.mooy1.slimequest.implementation;
 
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import me.mooy1.slimequest.SlimeQuest;

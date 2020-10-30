@@ -3,14 +3,15 @@ author: Mooy1
 description: Questing and progression addon
 main: me.mooy1.slimequest.SlimeQuest
 website: https://github.com/Mooy1/SlimeQuest
-depend: [Slimefun]
+depend: [Slimefun, CS-CoreLib]
+softdepend: [InfinityExpansion, LiteXpansion, FluffyMachines, ExtraTools]
 version: ${project.version}
 api-version: 1.16
 
 commands:
   slimequest:
     description: Do /slimequest help for a list of commands
-    usage: /<command> <subcommand>
+    usage: /slimequest <subcommand>
     aliases: [sq, sfquest]
 
 permissions:
