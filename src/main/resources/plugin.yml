@@ -6,3 +6,14 @@ website: https://github.com/Mooy1/SlimeQuest
 depend: [Slimefun]
 version: ${project.version}
 api-version: 1.16
+
+commands:
+  slimequest:
+    description: Do /slimequest help for a list of commands
+    usage: /<command> <subcommand>
+    aliases: [sq, sfquest]
+
+permissions:
+  slimequest.admin:
+    description: SlimeQuest admin commands
+    default: op
