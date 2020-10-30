@@ -3,6 +3,7 @@ package me.mooy1.slimequest.command.subcommands;
 import me.mooy1.slimequest.SlimeQuest;
 import me.mooy1.slimequest.command.QuestCommand;
 import me.mooy1.slimequest.command.SubCommand;
+import me.mooy1.slimequest.implementation.QuestRegistry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -21,6 +22,6 @@ public class Open extends SubCommand {
         }
         Player p = (Player) sender;
 
-        //open book
+        QuestRegistry.get().openBook(p);
     }
 }

@@ -13,7 +13,6 @@ public abstract class SubCommand {
 
     protected final SlimeQuest plugin;
     protected final QuestCommand cmd;
-
     private final String name;
     private final String description;
     private final boolean hidden;

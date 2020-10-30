@@ -3,6 +3,7 @@ package me.mooy1.slimequest;
 import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
 import me.mooy1.slimequest.command.QuestCommand;
 import me.mooy1.slimequest.implementation.QuestBook;
+import me.mooy1.slimequest.implementation.QuestRegistry;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
@@ -33,6 +34,9 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         } else {
             getLogger().log(Level.WARNING, "You must be on a DEV build to auto update!");
         }*/
+
+        //quests
+        new QuestRegistry(this);
 
         //item
         new QuestBook().register(this);
