@@ -18,9 +18,10 @@ public class QuestBook extends SlimefunItem implements Listener {
     public static final SlimefunItemStack QUESTBOOK = new SlimefunItemStack("QUESTBOOK", Material.ENCHANTED_BOOK, "&6Quest Book", "&7Right-Click to open");
     public static final Category SLIMEQUEST = new Category(new NamespacedKey(SlimeQuest.getInstance(), "slimequest"), new CustomItem(Material.ENCHANTED_BOOK, "&aSlime&6Quest"), 0);
 
-    public QuestBook() {
+    public QuestBook(SlimeQuest instance) {
         super(SLIMEQUEST, QUESTBOOK, RecipeType.ENHANCED_CRAFTING_TABLE,
                 new ItemStack[] { null, null, null, null, new ItemStack(Material.DIRT), null, null, null, null });
+        instance.getServer().getPluginManager().registerEvents(this, instance);
     }
 
     @EventHandler

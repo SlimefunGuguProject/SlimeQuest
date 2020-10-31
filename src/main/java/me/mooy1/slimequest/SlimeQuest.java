@@ -4,6 +4,7 @@ import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
 import me.mooy1.slimequest.command.QuestCommand;
 import me.mooy1.slimequest.implementation.QuestBook;
 import me.mooy1.slimequest.implementation.QuestRegistry;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
@@ -21,8 +22,8 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         instance = this;
 
         //stats
-        //@SuppressWarnings("unused")
-        //final Metrics metrics = new Metrics(this, 8991);
+        @SuppressWarnings("unused")
+        final Metrics metrics = new Metrics(this, 9265);
 
         PaperLib.suggestPaper(this);
 
@@ -39,7 +40,7 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         new QuestRegistry(this);
 
         //item
-        new QuestBook().register(this);
+        new QuestBook(this).register(this);
 
         //commands
         new QuestCommand(this).register();
