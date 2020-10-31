@@ -1,11 +1,11 @@
-package me.mooy1.slimequest.command;
+package io.github.mooy1.slimequest.command;
 
-import me.mooy1.slimequest.SlimeQuest;
-import me.mooy1.slimequest.command.subcommands.Book;
-import me.mooy1.slimequest.command.subcommands.Help;
-import me.mooy1.slimequest.command.subcommands.Open;
-import me.mooy1.slimequest.command.subcommands.Reset;
-import me.mooy1.slimequest.command.subcommands.Unlock;
+import io.github.mooy1.slimequest.command.subcommands.Help;
+import io.github.mooy1.slimequest.command.subcommands.Reset;
+import io.github.mooy1.slimequest.command.subcommands.Unlock;
+import io.github.mooy1.slimequest.SlimeQuest;
+import io.github.mooy1.slimequest.command.subcommands.Book;
+import io.github.mooy1.slimequest.command.subcommands.Open;
 
 import java.util.Collection;
 import java.util.LinkedList;

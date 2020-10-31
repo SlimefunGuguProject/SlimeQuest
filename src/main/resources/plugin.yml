@@ -1,7 +1,7 @@
 name: SlimeQuest
 author: Mooy1
 description: Questing and progression addon
-main: me.mooy1.slimequest.SlimeQuest
+main: io.github.mooy1.slimequest.SlimeQuest
 website: https://github.com/Mooy1/SlimeQuest
 depend: [Slimefun, CS-CoreLib]
 softdepend: [InfinityExpansion, LiteXpansion, FluffyMachines, ExtraTools]

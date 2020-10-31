@@ -1,6 +1,6 @@
-package me.mooy1.slimequest.command;
+package io.github.mooy1.slimequest.command;
 
-import me.mooy1.slimequest.SlimeQuest;
+import io.github.mooy1.slimequest.SlimeQuest;
 import me.mrCookieSlime.Slimefun.cscorelib2.chat.ChatColors;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;

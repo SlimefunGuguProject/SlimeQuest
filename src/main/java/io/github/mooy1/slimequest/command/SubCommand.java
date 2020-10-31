@@ -1,7 +1,7 @@
-package me.mooy1.slimequest.command;
+package io.github.mooy1.slimequest.command;
 
 import lombok.NonNull;
-import me.mooy1.slimequest.SlimeQuest;
+import io.github.mooy1.slimequest.SlimeQuest;
 import org.bukkit.command.CommandSender;
 
 import javax.annotation.Nonnull;

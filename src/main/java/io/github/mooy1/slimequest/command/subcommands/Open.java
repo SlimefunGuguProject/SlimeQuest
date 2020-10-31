@@ -1,9 +1,9 @@
-package me.mooy1.slimequest.command.subcommands;
+package io.github.mooy1.slimequest.command.subcommands;
 
-import me.mooy1.slimequest.SlimeQuest;
-import me.mooy1.slimequest.command.QuestCommand;
-import me.mooy1.slimequest.command.SubCommand;
-import me.mooy1.slimequest.implementation.QuestRegistry;
+import io.github.mooy1.slimequest.implementation.QuestRegistry;
+import io.github.mooy1.slimequest.SlimeQuest;
+import io.github.mooy1.slimequest.command.QuestCommand;
+import io.github.mooy1.slimequest.command.SubCommand;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

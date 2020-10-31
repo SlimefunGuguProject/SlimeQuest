@@ -1,9 +1,9 @@
-package me.mooy1.slimequest;
+package io.github.mooy1.slimequest;
 
+import io.github.mooy1.slimequest.command.QuestCommand;
+import io.github.mooy1.slimequest.implementation.QuestRegistry;
 import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
-import me.mooy1.slimequest.command.QuestCommand;
-import me.mooy1.slimequest.implementation.QuestBook;
-import me.mooy1.slimequest.implementation.QuestRegistry;
+import io.github.mooy1.slimequest.implementation.QuestBook;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;

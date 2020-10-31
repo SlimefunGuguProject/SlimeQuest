@@ -1,6 +1,5 @@
-package me.mooy1.slimequest.command;
+package io.github.mooy1.slimequest.command;
 
-import me.mooy1.slimequest.utils.MessageUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;

@@ -1,4 +1,4 @@
-package me.mooy1.slimequest.utils;
+package io.github.mooy1.slimequest.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

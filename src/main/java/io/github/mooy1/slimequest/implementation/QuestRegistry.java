@@ -1,8 +1,8 @@
-package me.mooy1.slimequest.implementation;
+package io.github.mooy1.slimequest.implementation;
 
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
-import me.mooy1.slimequest.SlimeQuest;
-import me.mooy1.slimequest.utils.MessageUtils;
+import io.github.mooy1.slimequest.SlimeQuest;
+import io.github.mooy1.slimequest.utils.MessageUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.collections.Pair;
@@ -59,8 +59,6 @@ public class QuestRegistry implements Listener {
     }
 
     public void openBook(Player p) {
-        MessageUtils.broadcast(groups.toString());
-
         if (!history.containsKey(p)) {
             List<Integer> groupPages = new ArrayList<>();
             for (int i = 0 ; i < groups.size() ; i++) {
@@ -71,8 +69,6 @@ public class QuestRegistry implements Listener {
             Pair<Integer, List<Integer>> playerHistory = history.get(p);
             openGroup(p, playerHistory.getFirstValue(), playerHistory.getSecondValue());
         }
-
-        MessageUtils.broadcast(history.get(p).toString());
     }
 
     private static final int PREV = 0;
@@ -86,12 +82,10 @@ public class QuestRegistry implements Listener {
         List<QuestPage> pages = group.getRegisteredPages();
         QuestPage page = pages.get(pageID);
 
-        MessageUtils.broadcast(groups.toString());
-        MessageUtils.broadcast(group.getRegisteredPages().toString());
-
         ChestMenu menu = new ChestMenu("&8Stage: " + group.getName() + " (" + (groupID) + ")");
         menu.setEmptySlotsClickable(false);
-        page.onOpen(p, menu);
+
+        page.makeMenu(menu, p);
 
         menu.addItem(PREV, ChestMenuUtils.getPreviousButton(p, groupID + 1, groups.size()), (player, i, itemStack, clickAction) -> {
             if (groupID > 0) {

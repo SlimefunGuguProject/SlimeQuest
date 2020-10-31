@@ -1,11 +1,11 @@
-package me.mooy1.slimequest.implementation;
+package io.github.mooy1.slimequest.implementation;
 
+import io.github.mooy1.slimequest.implementation.questpages.InfinityStart;
+import io.github.mooy1.slimequest.implementation.questpages.VanillaAdvanced;
+import io.github.mooy1.slimequest.implementation.questpages.VanillaStart;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import me.mooy1.slimequest.implementation.questpages.InfinityStart;
-import me.mooy1.slimequest.implementation.questpages.VanillaAdvanced;
-import me.mooy1.slimequest.implementation.questpages.VanillaStart;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

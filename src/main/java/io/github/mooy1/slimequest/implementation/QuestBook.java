@@ -1,7 +1,7 @@
-package me.mooy1.slimequest.implementation;
+package io.github.mooy1.slimequest.implementation;
 
+import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
-import me.mooy1.slimequest.SlimeQuest;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
