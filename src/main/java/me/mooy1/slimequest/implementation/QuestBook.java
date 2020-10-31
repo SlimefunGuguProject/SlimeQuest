@@ -30,6 +30,7 @@ public class QuestBook extends SlimefunItem implements Listener {
 
         if (slimefunItem != null && slimefunItem.getItem() == QUESTBOOK) {
             QuestRegistry.get().openBook(e.getPlayer());
+            e.cancel();
         }
     }
 }

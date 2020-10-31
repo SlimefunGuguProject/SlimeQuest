@@ -4,22 +4,29 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import me.mooy1.slimequest.implementation.questpages.InfinityStart;
+import me.mooy1.slimequest.implementation.questpages.VanillaAdvanced;
 import me.mooy1.slimequest.implementation.questpages.VanillaStart;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class QuestGroup {
 
     private final Type type;
+    private final List<QuestPage> pages = new ArrayList<>();
 
     public QuestGroup(Type type) {
         this.type = type;
     }
 
     @Nonnull
-    public QuestPage[] getPages() {
-        return type.getPages();
+    public List<QuestPage> getRegisteredPages() {
+        return pages;
+    }
+
+    public void registerPage(QuestPage page) {
+        pages.add(page);
     }
 
     @Nonnull
@@ -30,13 +37,22 @@ public class QuestGroup {
     @Getter
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public enum Type {
-        VANILLA(new QuestPage[] {new VanillaStart() }, "Vanilla", null),
-        INFINITY(new QuestPage[] {new InfinityStart() }, "InfinityExpansion", "InfinityExpansion");
+        A("Basic",
+                new QuestPage[] {new VanillaStart(), new VanillaAdvanced()},
+                new String[] {"Vanilla", "Vanilla"}),
+        B("Beginnings",
+                new QuestPage[] {new InfinityStart() },
+                new String[] {"InfinityExpansion"}),
+        C("Advanced",
+                  new QuestPage[] { },
+                new String[] { }),
+        D("Infinity",
+                  new QuestPage[] {new InfinityStart()  },
+                new String[] {"InfinityExpansion" });
 
         @Nonnull
-        private final QuestPage[] pages;
         private final String name;
-        @Nullable
-        private final String req;
+        private final QuestPage[] pages;
+        private final String[] req;
     }
 }

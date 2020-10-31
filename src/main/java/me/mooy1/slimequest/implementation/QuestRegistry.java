@@ -10,9 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -33,11 +31,24 @@ public class QuestRegistry implements Listener {
         registry = this;
         PluginManager manager = instance.getServer().getPluginManager();
         manager.registerEvents(this, instance);
+        List<String> plugins = new ArrayList<>();
 
         for (QuestGroup.Type type : QuestGroup.Type.values()) {
-            if (type.getReq() == null || manager.isPluginEnabled(type.getReq())) {
-                QuestGroup group = new QuestGroup(type);
-                instance.getLogger().log(Level.INFO, "Registering " + group.getName() + " Quests...");
+            QuestGroup group = new QuestGroup(type);
+
+            for (int i = 0 ; i < type.getPages().length ; i++) {
+                String req = type.getReq()[i];
+
+                if (plugins.contains(req) || req.equals("Vanilla") || manager.isPluginEnabled(req)) {
+                    if (!plugins.contains(req)) {
+                        plugins.add(req);
+                        instance.getLogger().log(Level.INFO, "Registering " + req + " Quests...");
+                    }
+                    group.registerPage(type.getPages()[i]);
+                }
+            }
+
+            if (group.getRegisteredPages().size() > 0) {
                 groups.add(group);
             }
         }
@@ -46,6 +57,8 @@ public class QuestRegistry implements Listener {
     }
 
     public void openBook(Player p) {
+        MessageUtils.broadcast(groups.toString());
+
         if (!history.containsKey(p)) {
             List<Integer> groupPages = new ArrayList<>();
             for (int i = 0 ; i < groups.size() ; i++) {
@@ -56,6 +69,8 @@ public class QuestRegistry implements Listener {
             Pair<Integer, List<Integer>> playerHistory = history.get(p);
             openGroup(p, playerHistory.getFirstValue(), playerHistory.getSecondValue());
         }
+
+        MessageUtils.broadcast(history.get(p).toString());
     }
 
     private static final int PREV = 0;
@@ -66,57 +81,53 @@ public class QuestRegistry implements Listener {
 
         QuestGroup group = groups.get(groupID);
         int pageID = groupPages.get(groupID);
-        int groupPage = groupID + 1;
-        QuestPage[] pages = group.getPages();
-        QuestPage page = pages[pageID];
+        List<QuestPage> pages = group.getRegisteredPages();
+        QuestPage page = pages.get(pageID);
 
-        ChestMenu menu = new ChestMenu("&6" + group.getName() + " Quests (" + groupPage + ")");
+        MessageUtils.broadcast(groups.toString());
+        MessageUtils.broadcast(group.getRegisteredPages().toString());
+
+        ChestMenu menu = new ChestMenu("&8Stage: " + group.getName() + " (" + (groupID) + ")");
         menu.setEmptySlotsClickable(false);
-
-        menu.addItem(PREV, ChestMenuUtils.getPreviousButton(p, groupPage, groups.size()), (player, i, itemStack, clickAction) -> {
-            if (groupID > 0) {
-                MessageUtils.broadcast("PREV");
-                openGroup(p, groupID - 1, groupPages);
-            } else {
-                MessageUtils.broadcast("PREV FAIL");
-            }
-            return false;
-        });
-
-        menu.addItem(NEXT, ChestMenuUtils.getNextButton(p, groupPage, groups.size()), (player, i, itemStack, clickAction) -> {
-            if (groupID < groups.size() - 1) {
-                MessageUtils.broadcast("NEXT");
-                openGroup(p, groupID + 1, groupPages);
-            } else {
-                MessageUtils.broadcast(groupID + " " + (groups.size() - 1));
-            }
-            return false;
-        });
-
-        for (int i = 0 ; i < pages.length ; i++) {
-            menu.addItem(i + 1, pages[i].getItem(), (player, slot, itemStack, clickAction) -> {
-                groupPages.set(groupID, slot - 1);
-                openGroup(p, groupID, groupPages);
-                return false;
-            });
-            i++;
-        }
-
-        ItemStack currentPage = menu.getItemInSlot(pageID + 1).clone();
-        currentPage.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-        ItemMeta meta = currentPage.getItemMeta();
-        if (meta != null) {
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-            currentPage.setItemMeta(meta);
-        }
-        menu.replaceExistingItem(pageID + 1, currentPage);
-
-        for (int i = pages.length ; i < 8 ; i++) {
-            menu.addItem(i + 1, new CustomItem(Material.GRAY_STAINED_GLASS_PANE, ""), ChestMenuUtils.getEmptyClickHandler());
-            i++;
-        }
-
         page.onOpen(p, menu);
+
+        menu.addItem(PREV, ChestMenuUtils.getPreviousButton(p, groupID + 1, groups.size()), (player, i, itemStack, clickAction) -> {
+            if (groupID > 0) {
+                openGroup(p, groupID - 1, groupPages);
+            }
+            return false;
+        });
+
+        menu.addItem(NEXT, ChestMenuUtils.getNextButton(p, groupID + 1, groups.size()), (player, i, itemStack, clickAction) -> {
+            if (groupID < groups.size() - 1) {
+                openGroup(p, groupID + 1, groupPages);
+            }
+            return false;
+        });
+
+        for (int i = 1 ; i < pages.size() + 1 ; i++) {
+            ItemStack item = pages.get(i - 1).getItem();
+            if (i - 1 == pageID) {
+                ItemStack currentItem = item.clone();
+                currentItem.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+                ItemMeta meta = currentItem.getItemMeta();
+                if (meta != null) {
+                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                    currentItem.setItemMeta(meta);
+                }
+                menu.addItem(i, currentItem, ChestMenuUtils.getEmptyClickHandler());
+            } else {
+                menu.addItem(i, item, (player, slot, itemStack, clickAction) -> {
+                    groupPages.set(groupID, slot - 1);
+                    openGroup(p, groupID, groupPages);
+                    return false;
+                });
+            }
+        }
+
+        for (int i = pages.size() + 1 ; i < 8 ; i++) {
+            menu.addItem(i, new CustomItem(Material.GRAY_STAINED_GLASS_PANE, " "), ChestMenuUtils.getEmptyClickHandler());
+        }
 
         p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
         menu.open(p);
@@ -124,10 +135,5 @@ public class QuestRegistry implements Listener {
 
     public static QuestRegistry get() {
         return registry;
-    }
-
-    @EventHandler
-    private void onPlayerLeave(PlayerQuitEvent e) {
-        history.remove(e.getPlayer());
     }
 }

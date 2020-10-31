@@ -11,13 +11,15 @@ import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class InfinityStart extends QuestPage {
-    public InfinityStart() {
-        super(new CustomItem(Material.GRASS_BLOCK, "&aINFINITY Start"));
+public class VanillaAdvanced extends QuestPage {
+    public VanillaAdvanced() {
+        super(new CustomItem(Material.DIRT, "&aVanilla Advanced"));
     }
 
     @Override
     public void onOpen(@Nonnull Player p, @Nonnull ChestMenu menu) {
+        menu.addItem(20, new ItemStack(Material.GLASS));
+        menu.addMenuClickHandler(20, (player, i, itemStack, clickAction) -> false);
         menu.addItem(9, new ItemStack(Material.GLASS), ChestMenuUtils.getEmptyClickHandler());
     }
 }
