@@ -1,8 +1,10 @@
 package io.github.mooy1.slimequest.command;
 
+import io.github.mooy1.slimequest.command.subcommands.Check;
 import io.github.mooy1.slimequest.command.subcommands.Help;
+import io.github.mooy1.slimequest.command.subcommands.Remove;
 import io.github.mooy1.slimequest.command.subcommands.Reset;
-import io.github.mooy1.slimequest.command.subcommands.Unlock;
+import io.github.mooy1.slimequest.command.subcommands.Complete;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.subcommands.Book;
 import io.github.mooy1.slimequest.command.subcommands.Open;
@@ -23,7 +25,9 @@ public class SubCommands {
         commands.add(new Open(plugin, cmd));
         commands.add(new Book(plugin, cmd));
         commands.add(new Reset(plugin, cmd));
-        commands.add(new Unlock(plugin, cmd));
+        commands.add(new Complete(plugin, cmd));
+        commands.add(new Remove(plugin, cmd));
+        commands.add(new Check(plugin, cmd));
 
         return commands;
     }

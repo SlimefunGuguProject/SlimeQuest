@@ -4,7 +4,7 @@ description: Questing and progression addon
 main: io.github.mooy1.slimequest.SlimeQuest
 website: https://github.com/Mooy1/SlimeQuest
 depend: [Slimefun, CS-CoreLib]
-softdepend: [InfinityExpansion, LiteXpansion, FluffyMachines, ExtraTools]
+softdepend: [InfinityExpansion, LiteXpansion, FluffyMachines, ExtraTools, SFCalc]
 version: ${project.version}
 api-version: 1.16
 

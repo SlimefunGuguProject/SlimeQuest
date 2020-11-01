@@ -1,21 +1,21 @@
 package io.github.mooy1.slimequest.implementation;
 
+import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.utils.MessageUtils;
+import io.github.mooy1.slimequest.utils.StackUtils;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import io.github.mooy1.slimequest.SlimeQuest;
-import io.github.mooy1.slimequest.utils.MessageUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.collections.Pair;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.PluginManager;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.logging.Level;
 
 public class QuestRegistry implements Listener {
 
-    public static QuestRegistry registry;
-    private final List<QuestGroup> groups = new ArrayList<>();
+    private static QuestRegistry registry;
+    private final List<QuestStage> stages = new ArrayList<>();
     private final HashMap<Player, Pair<Integer, List<Integer>>> history = new HashMap<>();
 
     public QuestRegistry(SlimeQuest instance) {
@@ -35,8 +35,8 @@ public class QuestRegistry implements Listener {
         manager.registerEvents(this, instance);
         List<String> plugins = new ArrayList<>();
 
-        for (QuestGroup.Type type : QuestGroup.Type.values()) {
-            QuestGroup group = new QuestGroup(type);
+        for (QuestStage.Type type : QuestStage.Type.values()) {
+            QuestStage stage = new QuestStage(type);
 
             for (int i = 0 ; i < type.getPages().length ; i++) {
                 String req = type.getReq()[i];
@@ -46,12 +46,12 @@ public class QuestRegistry implements Listener {
                         plugins.add(req);
                         instance.getLogger().log(Level.INFO, "Registering " + req + " Quests...");
                     }
-                    group.registerPage(type.getPages()[i]);
+                    stage.registerPage(type.getPages()[i]);
                 }
             }
 
-            if (group.getRegisteredPages().size() > 0) {
-                groups.add(group);
+            if (stage.getRegisteredPages().size() > 0) {
+                stages.add(stage);
             }
         }
 
@@ -60,11 +60,11 @@ public class QuestRegistry implements Listener {
 
     public void openBook(Player p) {
         if (!history.containsKey(p)) {
-            List<Integer> groupPages = new ArrayList<>();
-            for (int i = 0 ; i < groups.size() ; i++) {
-                groupPages.add(0);
+            List<Integer> stages = new ArrayList<>();
+            for (int i = 0; i < this.stages.size() ; i++) {
+                stages.add(0);
             }
-            openGroup(p, 0, groupPages);
+            openGroup(p, 0, stages);
         } else {
             Pair<Integer, List<Integer>> playerHistory = history.get(p);
             openGroup(p, playerHistory.getFirstValue(), playerHistory.getSecondValue());
@@ -74,29 +74,33 @@ public class QuestRegistry implements Listener {
     private static final int PREV = 0;
     private static final int NEXT = 8;
 
-    private void openGroup(Player p, int groupID, List<Integer> groupPages) {
-        history.put(p, new Pair<>(groupID, groupPages));
+    private void openGroup(Player p, int stageID, List<Integer> stages) {
+        history.put(p, new Pair<>(stageID, stages));
 
-        QuestGroup group = groups.get(groupID);
-        int pageID = groupPages.get(groupID);
-        List<QuestPage> pages = group.getRegisteredPages();
+        QuestStage stage = this.stages.get(stageID);
+        int pageID = stages.get(stageID);
+        List<QuestPage> pages = stage.getRegisteredPages();
         QuestPage page = pages.get(pageID);
 
-        ChestMenu menu = new ChestMenu("&8Stage: " + group.getName() + " (" + (groupID) + ")");
+        ChestMenu menu = new ChestMenu("&8Stage "+ stageID + ": " + stage.getName());
         menu.setEmptySlotsClickable(false);
 
         page.makeMenu(menu, p);
 
-        menu.addItem(PREV, ChestMenuUtils.getPreviousButton(p, groupID + 1, groups.size()), (player, i, itemStack, clickAction) -> {
-            if (groupID > 0) {
-                openGroup(p, groupID - 1, groupPages);
+        menu.addItem(PREV, ChestMenuUtils.getPreviousButton(p, stageID + 1, this.stages.size()), (player, i, itemStack, clickAction) -> {
+            if (stageID > 0) {
+                openGroup(p, stageID - 1, stages);
             }
             return false;
         });
 
-        menu.addItem(NEXT, ChestMenuUtils.getNextButton(p, groupID + 1, groups.size()), (player, i, itemStack, clickAction) -> {
-            if (groupID < groups.size() - 1) {
-                openGroup(p, groupID + 1, groupPages);
+        menu.addItem(NEXT, ChestMenuUtils.getNextButton(p, stageID + 1, this.stages.size()), (player, i, itemStack, clickAction) -> {
+            if (stageID < this.stages.size() - 1) {
+                if (stage.getRequiredID() == -1 || PlayerData.get().check(p, stage.getRequiredID())) {
+                    openGroup(p, stageID + 1, stages);
+                } else {
+                    MessageUtils.message(p, ChatColor.RED + "You must complete the quest: " + Quest.names.get(Quest.ids.indexOf(stage.getRequiredID())) + " first!");
+                }
             }
             return false;
         });
@@ -104,18 +108,16 @@ public class QuestRegistry implements Listener {
         for (int i = 1 ; i < pages.size() + 1 ; i++) {
             ItemStack item = pages.get(i - 1).getItem();
             if (i - 1 == pageID) {
-                ItemStack currentItem = item.clone();
-                currentItem.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
-                ItemMeta meta = currentItem.getItemMeta();
-                if (meta != null) {
-                    meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                    currentItem.setItemMeta(meta);
-                }
-                menu.addItem(i, currentItem, ChestMenuUtils.getEmptyClickHandler());
+                menu.addItem(i, StackUtils.enchant(item.clone()), ChestMenuUtils.getEmptyClickHandler());
             } else {
                 menu.addItem(i, item, (player, slot, itemStack, clickAction) -> {
-                    groupPages.set(groupID, slot - 1);
-                    openGroup(p, groupID, groupPages);
+                    if (page.getReqID() == -1 || PlayerData.get().check(p, page.getReqID())) {
+                        stages.set(stageID, slot - 1);
+                        openGroup(p, stageID, stages);
+                    } else {
+                        MessageUtils.message(p, ChatColor.RED + "You must complete the quest: " + Quest.names.get(Quest.ids.indexOf(page.getReqID())) + " first!");
+                    }
+
                     return false;
                 });
             }

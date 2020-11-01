@@ -63,7 +63,7 @@ public class QuestCommand implements CommandExecutor, Listener {
 
     public void sendHelp(@Nonnull CommandSender sender) {
         sender.sendMessage("");
-        sender.sendMessage(ChatColors.color("&7----------&a&l Slime&6&lQuest &7----------"));
+        sender.sendMessage(ChatColors.color("&7----------&6&l SlimeQuest &7----------"));
         sender.sendMessage("");
         sender.sendMessage(ChatColors.color("&6Aliases: &e/sq, /sfquest"));
         sender.sendMessage("");

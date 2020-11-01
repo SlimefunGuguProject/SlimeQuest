@@ -3,6 +3,7 @@ package io.github.mooy1.slimequest.command.subcommands;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
+import io.github.mooy1.slimequest.implementation.data.PlayerData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -26,7 +27,8 @@ public class Reset extends SubCommand {
 
                 if (target != null) {
 
-                    //reset quest progress of target player
+                    PlayerData.get().reset(target);
+                    sender.sendMessage(ChatColor.YELLOW + "Reset " + target.getName() + "'s quest progress!");
 
                 } else {
 

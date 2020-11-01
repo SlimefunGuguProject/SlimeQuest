@@ -1,17 +1,20 @@
 package io.github.mooy1.slimequest.utils;
 
-import lombok.NonNull;
+import io.github.mooy1.slimequest.SlimeQuest;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Collection of utils for modifying ItemStacks and getting their ids
@@ -42,6 +45,29 @@ public final class StackUtils {
         return item.getType().toString();
     }
 
+    @Nonnull
+    public static ItemStack getItemFromIDorElse(@Nonnull String id, int amount, Material or) {
+
+        SlimefunItem sfItem = SlimefunItem.getByID(id);
+
+        if (sfItem != null) {
+
+            return new CustomItem(sfItem.getItem(), amount);
+
+        } else {
+
+            Material material = Material.getMaterial(id);
+
+            if (material != null){
+
+                return new ItemStack(material, amount);
+
+            }
+        }
+
+        return new ItemStack(or);
+    }
+
     @Nullable
     public static ItemStack getItemFromID(@Nonnull String id, int amount) {
 
@@ -65,30 +91,8 @@ public final class StackUtils {
         return null;
     }
 
-    public static void addLore(@Nonnull ItemStack item, @Nonnull List<String> lores) {
-        ItemMeta meta = item.getItemMeta();
-
-        if (meta != null) {
-
-            List<String> lore = new ArrayList<>();
-
-            if (meta.getLore() != null) {
-                lore = meta.getLore();
-            }
-
-            for (String line : lores) {
-                if (line != null) {
-                    lore.add(line);
-                }
-            }
-
-            meta.setLore(lore);
-
-            item.setItemMeta(meta);
-        }
-    }
-
-    public static void insertLore(@Nonnull ItemStack item, @Nonnull List<String> lores, @Nonnull String find, int offset) {
+    @ParametersAreNonnullByDefault
+    public static void insertLoreAndRename(ItemStack item, List<String> lores, String name) {
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null) return;
@@ -99,73 +103,29 @@ public final class StackUtils {
             lore = meta.getLore();
         }
 
-        int position = 0;
-        int i = 0;
-        for (String line : lore) {
-            if(ChatColor.stripColor(line).contains(ChatColor.stripColor(find))) {
-                position = i;
-            }
-            i++;
-        }
-
-        position += offset;
-
-        if (position < 0) return;
-
-        lore = lore.subList(0, position);
-
-        for (String line : lores) {
-            if (line != null) {
-                lore.add(line);
+        for (int i = 0 ; i < lore.size() ; i++) {
+            if (lore.get(i).equals("")) {
+                lore = lore.subList(0, i);
             }
         }
+
+        lore.addAll(lores);
 
         meta.setLore(lore);
+
+        meta.setDisplayName(name);
 
         item.setItemMeta(meta);
     }
 
-    /**
-     * This method transfers parts of lore from 1 item to another
-     *
-     * @param output item to transfer to
-     * @param input item to transfer from
-     * @param key string of lore to look for
-     * @param offset index of first line relative to key index
-     * @param lines total lines to transfer
-     */
-    public static void transferLore(@NonNull ItemStack output, @NonNull ItemStack input, @NonNull String key, int offset, int lines) {
-        ItemMeta inputMeta = input.getItemMeta();
-        if (inputMeta == null) {
-            return;
+    @Nonnull
+    public static ItemStack enchant(@Nonnull ItemStack item) {
+        item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
+        ItemMeta meta = item.getItemMeta();
+        if (meta != null) {
+            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+            item.setItemMeta(meta);
         }
-        List<String> inputLore = inputMeta.getLore();
-        if (inputLore == null) {
-            return;
-        }
-
-        ItemMeta outputMeta = output.getItemMeta();
-        if (outputMeta == null) {
-            return;
-        }
-
-        List<String> outputLore = outputMeta.getLore();
-        if (outputLore == null) {
-            return;
-        }
-
-        int i = 0;
-        for (String line : inputLore) {
-            if (ChatColor.stripColor(line).contains(key)) {
-
-                for (int ii = i + offset ; ii < i + lines + offset ; ii++) {
-                    outputLore.add(inputLore.get(ii));
-                }
-                outputMeta.setLore(outputLore);
-                output.setItemMeta(outputMeta);
-
-            }
-            i++;
-        }
+        return item;
     }
 }

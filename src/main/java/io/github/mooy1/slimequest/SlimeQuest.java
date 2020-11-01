@@ -2,6 +2,7 @@ package io.github.mooy1.slimequest;
 
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.implementation.QuestRegistry;
+import io.github.mooy1.slimequest.implementation.data.PlayerData;
 import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
 import io.github.mooy1.slimequest.implementation.QuestBook;
 import org.bstats.bukkit.Metrics;
@@ -35,6 +36,9 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         } else {
             getLogger().log(Level.WARNING, "You must be on a DEV build to auto update!");
         }*/
+
+        //player data
+        new PlayerData(this);
 
         //quests
         new QuestRegistry(this);
