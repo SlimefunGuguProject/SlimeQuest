@@ -1,1 +1,4 @@
 options:
+  # the base levels to give on quests that award levels
+  # default: 6
+  xp-reward-base: 6

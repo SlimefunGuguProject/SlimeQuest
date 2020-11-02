@@ -1,5 +1,6 @@
 package io.github.mooy1.slimequest.implementation;
 
+import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.implementation.data.PlayerData;
 import io.github.mooy1.slimequest.utils.MessageUtils;
 import io.github.mooy1.slimequest.utils.StackUtils;
@@ -28,6 +29,7 @@ public class Quest {
     public static final List<String> names = new ArrayList<>();
     public static final List<Integer> ids = new ArrayList<>();
     public static final List<Quest> quests = new ArrayList<>();
+    private static final int base = SlimeQuest.getInstance().config.getInt("options.xp-reward-base");
 
     private final ItemStack unlocked;
     private final ItemStack locked;
@@ -57,14 +59,14 @@ public class Quest {
      * @param id id number of quest, later quests should be higher and must be unique
      * @param desc description/guide for quest
      * @param slot slot in the quest page
-     * @param displayMaterialID the material of the display item as a string
+     * @param displayItemID the material of the display item as a string
      * @param menuSlots slots of the quest page that will be affected when the quest is completed
      * @param reqIDs previous quests that must be completed first
      * @param reqItems required item material ids
      * @param reqAmounts amount of each required item
      */
     @ParametersAreNonnullByDefault
-    public Quest(String name, int id, String desc, int slot, String displayMaterialID,
+    public Quest(String name, int id, String desc, int slot, String displayItemID,
                  int[] menuSlots, int[] reqIDs, String[] reqItems, int[] reqAmounts) {
 
         quests.add(this);
@@ -79,7 +81,7 @@ public class Quest {
         this.slot = slot;
         this.reqItems = reqItems;
         this.reqAmounts = reqAmounts;
-        ItemStack item = StackUtils.getItemFromIDorElse(displayMaterialID, 1, Material.BARRIER);
+        ItemStack item = StackUtils.getItemFromIDorElse(displayItemID, 1, Material.BARRIER);
         this.unlocked = item.clone();
         this.locked = item.clone();
         makeUnlockedItem(this.unlocked);
@@ -101,8 +103,8 @@ public class Quest {
         return this;
     }
 
-    public Quest setLevels(int levels) {
-        this.levels = levels;
+    public Quest setXP(int xp) {
+        this.levels = base * xp;
         return this;
     }
 
@@ -147,8 +149,8 @@ public class Quest {
         StackUtils.insertLoreAndRename(item, lore, name);
     }
 
-    private static final ItemStack RED = new CustomItem(Material.RED_STAINED_GLASS_PANE, "");
-    private static final ItemStack GREEN = new CustomItem(Material.GREEN_STAINED_GLASS_PANE, "");
+    private static final ItemStack RED = new CustomItem(Material.RED_STAINED_GLASS_PANE, " ");
+    private static final ItemStack GREEN = new CustomItem(Material.GREEN_STAINED_GLASS_PANE, " ");
 
     @ParametersAreNonnullByDefault
     public void addQuestStacks(ChestMenu menu, Player p, int stageID, int pageID) {

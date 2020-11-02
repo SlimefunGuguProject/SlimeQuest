@@ -6,7 +6,6 @@ import org.bukkit.command.TabCompleter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
 import java.util.List;
 
 public class QuestTabCompleter implements TabCompleter {
@@ -37,16 +36,11 @@ public class QuestTabCompleter implements TabCompleter {
 
     @Nonnull
     private List<String> createReturnList(@Nonnull List<String> list) {
-        List<String> returnList = new LinkedList<>();
 
-        for (String item : list) {
-            returnList.add(item.toLowerCase());
-
-            if (returnList.size() >= MAX_SUGGESTIONS) {
-                break;
-            }
+        if (list.size() > MAX_SUGGESTIONS) {
+            list = list.subList(0, MAX_SUGGESTIONS);
         }
 
-        return returnList;
+        return list;
     }
 }

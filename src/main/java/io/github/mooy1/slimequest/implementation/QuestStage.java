@@ -1,7 +1,7 @@
 package io.github.mooy1.slimequest.implementation;
 
-import io.github.mooy1.slimequest.implementation.stages.stage0.VanillaStart;
-import io.github.mooy1.slimequest.implementation.stages.stage0.VanillaStartA;
+import io.github.mooy1.slimequest.implementation.stages.stage1.VanillaStart;
+import io.github.mooy1.slimequest.implementation.stages.stage2.InfinityExpansionBasics;
 import io.github.mooy1.slimequest.utils.StackUtils;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,6 +19,7 @@ public class QuestStage {
     private final Type type;
     @Getter
     private final ItemStack item;
+    @Getter
     private final List<QuestPage> pages = new ArrayList<>();
 
     public QuestStage(Type type, int id) {
@@ -52,30 +53,29 @@ public class QuestStage {
     public enum Type {
         A("Basic",
                 new QuestPage[] {new VanillaStart()},
-                new String[] {"Vanilla"}, 0, new ItemStack(Material.GRASS_BLOCK)),
+                0, new ItemStack(Material.GRASS_BLOCK)),
         B("Stone",
-                new QuestPage[] {new VanillaStart(), new VanillaStartA()},
-                new String[] {"Vanilla", "Vanilla"}, 0, new ItemStack(Material.STONE)),
+                new QuestPage[] {new InfinityExpansionBasics()},
+                0, new ItemStack(Material.STONE)),
         C("Bronze",
-                new QuestPage[] {new VanillaStart()},
-                new String[] {"Vanilla"}, 0, new ItemStack(Material.IRON_INGOT)),
+                new QuestPage[] {},
+                0, new ItemStack(Material.IRON_INGOT)),
         D("Medieval",
-                  new QuestPage[] {new VanillaStart()},
-                new String[] {"Vanilla"}, 0, new ItemStack(Material.NETHERITE_INGOT)),
+                  new QuestPage[] {},
+                0, new ItemStack(Material.NETHERITE_INGOT)),
         E("Industrial",
-                  new QuestPage[] {new VanillaStart()},
-                new String[] {"Vanilla"}, 0, new ItemStack(Material.PISTON)),
+                  new QuestPage[] {},
+                0, new ItemStack(Material.PISTON)),
         F("Futuristic",
-                  new QuestPage[] {new VanillaStart()},
-                new String[] {"Vanilla"}, 0, new ItemStack(Material.IRON_BLOCK)),
+                  new QuestPage[] {},
+                0, new ItemStack(Material.IRON_BLOCK)),
         G("Infinity",
-                  new QuestPage[] {new VanillaStart()},
-                new String[] {"Vanilla"}, 4, new ItemStack(Material.NETHER_STAR));
+                  new QuestPage[] {},
+                4, new ItemStack(Material.NETHER_STAR));
 
         @Nonnull
         private final String name;
         private final QuestPage[] pages;
-        private final String[] req;
         private final int reqID;
         private final ItemStack item;
     }

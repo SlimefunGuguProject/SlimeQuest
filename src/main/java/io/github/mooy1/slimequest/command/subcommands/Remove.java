@@ -52,7 +52,7 @@ public class Remove extends SubCommand {
         }
 
         PlayerData.get().remove(target, targetID);
-        sender.sendMessage(ChatColor.YELLOW + "Removed quest " + args[2] + " from " + target.getName());
+        sender.sendMessage(ChatColor.YELLOW + "Removed quest " + args[2] + " from " + target.getName() + "!");
     }
 
     @Override

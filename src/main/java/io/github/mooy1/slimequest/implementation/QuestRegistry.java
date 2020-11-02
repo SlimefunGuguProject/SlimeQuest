@@ -28,8 +28,8 @@ public class QuestRegistry implements Listener {
             QuestStage stage = new QuestStage(type, id);
 
             //register pages of each stage
-            for (int i = 0 ; i < type.getPages().length ; i++) {
-                String req = type.getReq()[i];
+            for (QuestPage page : stage.getPages()) {
+                String req = page.getReq();
 
                 //check for required addons
                 if (plugins.contains(req) || req.equals("Vanilla") || manager.isPluginEnabled(req)) {
@@ -37,7 +37,9 @@ public class QuestRegistry implements Listener {
                         plugins.add(req);
                         instance.getLogger().log(Level.INFO, "Registering " + req + " Quests...");
                     }
-                    stage.registerPage(type.getPages()[i]);
+                    //cant register the quests of the page until we verify that it's addon is enabled
+                    page.registerQuests();
+                    stage.registerPage(page);
                 }
             }
 

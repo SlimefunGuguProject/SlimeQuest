@@ -20,8 +20,8 @@ public class QuestMenu {
 
     private static final int PREV = 0;
     private static final int NEXT = 8;
-    private static final ItemStack BACKGROUND = new CustomItem(Material.GRAY_STAINED_GLASS_PANE, "");
-    private static final ItemStack NONE = new CustomItem(Material.BLACK_STAINED_GLASS_PANE, "");
+    private static final ItemStack BACKGROUND = new CustomItem(Material.GRAY_STAINED_GLASS_PANE, " ");
+    private static final ItemStack NONE = new CustomItem(Material.BLACK_STAINED_GLASS_PANE, " ");
 
     public static final List<QuestStage> stages = new ArrayList<>();
 
@@ -110,10 +110,12 @@ public class QuestMenu {
 
         if (stageID < stages.size() - 1) {
 
-            if (!PlayerData.get().check(p, stages.get(stageID + 1).getRequiredID())) { //check if viewable
+            QuestStage target = stages.get(stageID + 1);
 
-                return new Pair<>(new CustomItem(Material.BARRIER, ChatColor.RED + "Next Stage: " + stages.get(stageID + 1).getName()), (player, i, itemStack, clickAction) -> {
-                    MessageUtils.messageWithCD(p, ChatColor.RED + "You must complete the quest: " + stages.get(stageID + 1).getName() + " first!", 1000);
+            if (!PlayerData.get().check(p, target.getRequiredID())) { //check if viewable
+
+                return new Pair<>(new CustomItem(Material.BARRIER, ChatColor.RED + "Next Stage: " + target.getName()), (player, i, itemStack, clickAction) -> {
+                    MessageUtils.messageWithCD(p, ChatColor.RED + "You must complete the quest: " + Quest.nameFromID(target.getRequiredID()) + " first!", 1000);
                     p.playSound(p.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1, 1);
                     return false;
                 });
