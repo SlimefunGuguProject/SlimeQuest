@@ -1,45 +1,28 @@
 package io.github.mooy1.slimequest.implementation;
 
-import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import lombok.Getter;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
-import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public abstract class QuestPage {
+    public final List<Quest> quests = new ArrayList<>();
     @Getter
-    private final ItemStack item;
-    @Getter
-    private final int reqID;
-    private final Map<Material, Integer[]> background = new HashMap<>();
-    private final List<Quest> quests = new ArrayList<>();
+    private final String name;
 
-    protected QuestPage(@Nonnull ItemStack item, int reqID) {
-        this.item = item;
-        this.reqID = reqID;
-        makeBackground(background);
-        addQuests(quests);
+    /**
+     * This object represents a page of quests which includes multiple quests and builds the menu
+     *
+     */
+    protected QuestPage(String name) {
+        this.name = name;
     }
 
-    public void makeMenu(ChestMenu menu, Player p) {
-        for (Material material : this.background.keySet()) {
-            for (Integer i : this.background.get(material)) {
-                menu.addItem(i, new ItemStack(material), ChestMenuUtils.getEmptyClickHandler());
-            }
-        }
+    public void makeMenu(ChestMenu menu, Player p, int stageID, int pageID) {
         for (Quest quest : this.quests) {
-            quest.addQuestStack(menu, p);
+            quest.addQuestStacks(menu, p, stageID, pageID);
         }
     }
-
-    public abstract void addQuests(List<Quest> quests);
-
-    public abstract void makeBackground(Map<Material, Integer[]> map);
 }

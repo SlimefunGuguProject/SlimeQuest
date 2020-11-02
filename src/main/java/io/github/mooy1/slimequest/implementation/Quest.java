@@ -6,6 +6,7 @@ import io.github.mooy1.slimequest.utils.StackUtils;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
+import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,7 +15,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,47 +25,60 @@ import java.util.Objects;
 
 public class Quest {
 
-    public static List<String> names = new ArrayList<>();
-    public static List<Integer> ids = new ArrayList<>();
-    public static List<Quest> quests = new ArrayList<>();
+    public static final List<String> names = new ArrayList<>();
+    public static final List<Integer> ids = new ArrayList<>();
+    public static final List<Quest> quests = new ArrayList<>();
 
     private final ItemStack unlocked;
     private final ItemStack locked;
     private final int id;
-    private final int levels;
+    private final String desc;
+    private int levels = 0;
     private final String name;
-    private final int reqID;
-    private final String[] reqIDs;
+    private final int[] reqIDs;
+    private final String[] reqItems;
     private final int[] reqAmounts;
     private final int slot;
-    private final ItemStack reward;
-    private final boolean consume;
-    private final String customReq;
+    private final int[] menuSlots;
+    private ItemStack reward = null;
+    private boolean consume = false;
+    private String customReq = null;
 
+    /**
+     * This object represents a single quest that can be completed and all of its requirements and rewards
+     * ids and addons:
+     * 0-100 vanilla
+     * 100-200 slimefun
+     * 200-250 sfcalc, extratools, moretools,
+     * 250-300 FluffyMachines
+     * 300-400 LiteXpansion
+     * 400-500 InfinityExpansion
+     *  @param name name of the quest
+     * @param id id number of quest, later quests should be higher and must be unique
+     * @param desc description/guide for quest
+     * @param slot slot in the quest page
+     * @param displayMaterialID the material of the display item as a string
+     * @param menuSlots slots of the quest page that will be affected when the quest is completed
+     * @param reqIDs previous quests that must be completed first
+     * @param reqItems required item material ids
+     * @param reqAmounts amount of each required item
+     */
     @ParametersAreNonnullByDefault
-    public Quest(String name, int id, String displayMaterialID, int slot, @Nullable String reward, int amount, int levels,
-                 String[] reqIDs, int[] reqAmounts, int reqID, boolean consume, @Nullable String customReq) {
+    public Quest(String name, int id, String desc, int slot, String displayMaterialID,
+                 int[] menuSlots, int[] reqIDs, String[] reqItems, int[] reqAmounts) {
 
         quests.add(this);
         names.add(name);
         ids.add(id);
 
         this.id = id;
+        this.menuSlots = menuSlots;
         this.name = name;
-        this.levels = levels;
-        this.reqID = reqID;
-        this.slot = slot;
-        this.consume = consume;
-        this.customReq = customReq;
+        this.desc = desc;
         this.reqIDs = reqIDs;
+        this.slot = slot;
+        this.reqItems = reqItems;
         this.reqAmounts = reqAmounts;
-
-        if (reward == null) {
-            this.reward = null;
-        } else {
-            this.reward = StackUtils.getItemFromID(reward, amount);
-        }
-
         ItemStack item = StackUtils.getItemFromIDorElse(displayMaterialID, 1, Material.BARRIER);
         this.unlocked = item.clone();
         this.locked = item.clone();
@@ -73,14 +86,36 @@ public class Quest {
         makeLockedItem(this.locked);
     }
 
+    public Quest setReward(String id, int amount) {
+        this.reward = StackUtils.getItemFromID(id, amount);
+        return this;
+    }
+
+    public Quest setCustomReq(String req) {
+        this.customReq = req;
+        return this;
+    }
+
+    public Quest setConsume() {
+        this.consume = true;
+        return this;
+    }
+
+    public Quest setLevels(int levels) {
+        this.levels = levels;
+        return this;
+    }
+
     protected void makeUnlockedItem(@Nonnull ItemStack item) {
 
         List<String> lore = new ArrayList<>();
         String name = ChatColor.GREEN + "Completed: " + this.name;
 
+        lore.add("");
+        lore.add(ChatColor.AQUA + this.desc);
+
         StackUtils.enchant(item);
 
-        MessageUtils.broadcast(lore.toString());
         StackUtils.insertLoreAndRename(item, lore, name);
     }
 
@@ -90,9 +125,11 @@ public class Quest {
         String name = ChatColor.GOLD + "Quest: " + this.name;
 
         lore.add("");
+        lore.add(ChatColor.AQUA + this.desc);
+        lore.add("");
         lore.add(ChatColor.GREEN + "Requirements: ");
         for (int i = 0 ; i < this.reqAmounts.length ; i++) {
-            lore.add(ChatColor.GREEN + ItemUtils.getItemName(StackUtils.getItemFromID(this.reqIDs[i], 1))+ " x " + this.reqAmounts[i]);
+            lore.add(ChatColor.GREEN + ItemUtils.getItemName(StackUtils.getItemFromID(this.reqItems[i], 1))+ " x " + this.reqAmounts[i]);
         }
         if (this.customReq != null) {
             lore.add(ChatColor.GREEN + this.customReq);
@@ -110,26 +147,37 @@ public class Quest {
         StackUtils.insertLoreAndRename(item, lore, name);
     }
 
-    public void addQuestStack(@Nonnull ChestMenu menu, @Nonnull Player p) {
+    private static final ItemStack RED = new CustomItem(Material.RED_STAINED_GLASS_PANE, "");
+    private static final ItemStack GREEN = new CustomItem(Material.GREEN_STAINED_GLASS_PANE, "");
+
+    @ParametersAreNonnullByDefault
+    public void addQuestStacks(ChestMenu menu, Player p, int stageID, int pageID) {
         ItemStack item;
+        ItemStack extra;
         if (PlayerData.get().check(p, this.id)) {
             item = this.unlocked;
+            extra = GREEN;
         } else {
             item = this.locked;
+            extra = RED;
         }
-        menu.addItem(this.slot, item, this.makeQuestHandler(menu));
+        menu.addItem(this.slot, item, this.makeQuestHandler(stageID, pageID));
+
+        for (int slot : this.menuSlots) {
+            menu.addItem(slot, extra, ChestMenuUtils.getEmptyClickHandler());
+        }
     }
 
     @Nonnull
-    protected ChestMenu.MenuClickHandler makeQuestHandler(ChestMenu menu) {
+    protected ChestMenu.MenuClickHandler makeQuestHandler(int stageID, int pageID) {
         return (player, slot, itemStack, clickAction) -> {
             if (PlayerData.get().check(player, this.id)) {
                 return false;
             }
 
-            if (this.reqID > -1 && !PlayerData.get().check(player, this.reqID)) {
+            if (this.reqIDs.length > 0 && !PlayerData.get().checkAll(player, this.reqIDs)) {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1, 1);
-                MessageUtils.message(player, ChatColor.RED + "You must complete the quest: " + Quest.names.get(Quest.ids.indexOf(this.reqID)) + " first!");
+                MessageUtils.messageWithCD(player, ChatColor.RED + "You must complete previous quests first!", 1000);
                 return false;
             }
 
@@ -146,21 +194,21 @@ public class Quest {
 
             int match = 0;
             for (int i = 0 ; i < this.reqAmounts.length ; i++) {
-                String id = this.reqIDs[i];
+                String id = this.reqItems[i];
                 if (contentsID.containsKey(id) && contentsID.get(id) >= this.reqAmounts[i]) {
                     match++;
                 }
             }
 
-            if (match != this.reqIDs.length) {
+            if (match != this.reqItems.length) {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1, 1);
-                MessageUtils.message(player, ChatColor.RED + "You do not have all the required items!");
+                MessageUtils.messageWithCD(player, ChatColor.RED + "You do not have all the required items!", 1000);
                 return false;
             }
 
             if (giveRewards(player, inv, contents)) {
                 giveUnlock(player, false);
-                unlockQuestStack(menu, this.slot);
+                new QuestMenu(player, stageID, pageID, true);
             }
             return false;
         };
@@ -172,7 +220,7 @@ public class Quest {
             if (Arrays.asList(contents).contains(null)) {
                 inv.addItem(reward);
             } else {
-                MessageUtils.message(player, ChatColor.GOLD + "Not enough room to claim!");
+                MessageUtils.messageWithCD(player, ChatColor.GOLD + "Not enough room to claim!", 1000);
                 return false;
             }
         }
@@ -187,7 +235,7 @@ public class Quest {
         if (this.consume && !free) {
 
             for (int i = 0 ; i < this.reqAmounts.length ; i++) {
-                String id = this.reqIDs[i];
+                String id = this.reqItems[i];
                 int remaining = this.reqAmounts[i];
                 for (ItemStack item : player.getInventory().getContents()) {
                     if (item != null && Objects.equals(StackUtils.getIDFromItem(item), id)) {
@@ -206,13 +254,12 @@ public class Quest {
             }
         }
 
-        MessageUtils.message(player, ChatColor.GREEN + "Completed quest: " + this.name);
+        MessageUtils.messageWithCD(player, ChatColor.GREEN + "Completed quest: " + this.name, 1000);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
         PlayerData.get().add(player, this.id);
     }
 
-    protected void unlockQuestStack(@Nonnull ChestMenu menu, int slot) {
-        menu.replaceExistingItem(slot, this.unlocked);
-        menu.addMenuClickHandler(slot, ChestMenuUtils.getEmptyClickHandler());
+    public static String nameFromID(int questID) {
+        return Quest.names.get(Quest.ids.indexOf(questID));
     }
 }

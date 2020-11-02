@@ -28,6 +28,7 @@ public class SubCommands {
         commands.add(new Complete(plugin, cmd));
         commands.add(new Remove(plugin, cmd));
         commands.add(new Check(plugin, cmd));
+        commands.add(new io.github.mooy1.slimequest.command.subcommands.List(plugin, cmd));
 
         return commands;
     }

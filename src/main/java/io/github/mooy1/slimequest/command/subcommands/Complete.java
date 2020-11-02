@@ -39,7 +39,7 @@ public class Complete extends SubCommand {
         }
 
         if (!Quest.names.contains(args[2])) {
-            sender.sendMessage(ChatColor.RED + "Invalid id!");
+            sender.sendMessage(ChatColor.RED + "Invalid quest!");
             return;
         }
 

@@ -3,6 +3,7 @@ package io.github.mooy1.slimequest.implementation.data;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.implementation.Quest;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
@@ -40,7 +41,12 @@ public class PlayerData {
 
         if (data != null) {
             for (int i : data) {
-                unlocked.add(Quest.names.get(Quest.ids.indexOf(i)));
+                int index = Quest.ids.indexOf(i);
+                if (index > -1) {
+                    unlocked.add(Quest.names.get(index));
+                } else {
+                    unlocked.add(ChatColor.RED + "UNKNOWN" + ChatColor.GREEN);
+                }
             }
         }
 
@@ -104,5 +110,18 @@ public class PlayerData {
 
     public boolean check(@Nonnull Player p, int id) {
         return ArrayUtils.contains(getIDs(p), id);
+    }
+
+    public boolean checkAll(@Nonnull Player p, int[] ids) {
+        int match = 0;
+        int[] has = getIDs(p);
+
+        for (int id : ids) {
+            if (ArrayUtils.contains(has, id)) {
+                match++;
+            }
+        }
+
+        return (match == ids.length);
     }
 }

@@ -22,6 +22,6 @@ public class Open extends SubCommand {
         }
         Player p = (Player) sender;
 
-        QuestRegistry.get().openBook(p);
+        QuestRegistry.openBook(p);
     }
 }

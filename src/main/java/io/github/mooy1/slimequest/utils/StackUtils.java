@@ -1,6 +1,5 @@
 package io.github.mooy1.slimequest.utils;
 
-import io.github.mooy1.slimequest.SlimeQuest;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import org.bukkit.Material;
@@ -14,7 +13,6 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * Collection of utils for modifying ItemStacks and getting their ids
@@ -46,7 +44,7 @@ public final class StackUtils {
     }
 
     @Nonnull
-    public static ItemStack getItemFromIDorElse(@Nonnull String id, int amount, Material or) {
+    public static ItemStack getItemFromIDorElse(@Nonnull String id, int amount, @Nonnull Material or) {
 
         SlimefunItem sfItem = SlimefunItem.getByID(id);
 
@@ -118,14 +116,12 @@ public final class StackUtils {
         item.setItemMeta(meta);
     }
 
-    @Nonnull
-    public static ItemStack enchant(@Nonnull ItemStack item) {
+    public static void enchant(@Nonnull ItemStack item) {
         item.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 1);
         ItemMeta meta = item.getItemMeta();
         if (meta != null) {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
             item.setItemMeta(meta);
         }
-        return item;
     }
 }

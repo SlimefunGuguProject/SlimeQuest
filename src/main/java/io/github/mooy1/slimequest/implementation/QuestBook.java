@@ -28,8 +28,8 @@ public class QuestBook extends SlimefunItem implements Listener {
     public void onRightClick(PlayerRightClickEvent e) {
         SlimefunItem slimefunItem = SlimefunItem.getByItem(e.getItem());
 
-        if (slimefunItem != null && slimefunItem.getItem() == QUESTBOOK) {
-            QuestRegistry.get().openBook(e.getPlayer());
+        if (slimefunItem instanceof QuestBook) {
+            QuestRegistry.openBook(e.getPlayer());
             e.cancel();
         }
     }

@@ -20,26 +20,27 @@ public class Reset extends SubCommand {
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-        if (args.length == 2) {
-            if (sender.hasPermission("slimequest.admin")) {
 
-                Player target = Bukkit.getPlayer(args[1]);
-
-                if (target != null) {
-
-                    PlayerData.get().reset(target);
-                    sender.sendMessage(ChatColor.YELLOW + "Reset " + target.getName() + "'s quest progress!");
-
-                } else {
-
-                    sender.sendMessage(ChatColor.RED + "Invalid player");
-                }
-            } else {
-                cmd.sendNoPerm(sender);
-            }
-        } else {
-            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest reset <player>");
+        if (!sender.hasPermission("slimequest.admin")) {
+            cmd.sendNoPerm(sender);
+            return;
         }
+
+        if (args.length != 2) {
+            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest reset <player>");
+            return;
+        }
+
+        Player target = Bukkit.getPlayer(args[1]);
+
+        if (target == null) {
+            sender.sendMessage(ChatColor.RED + "Invalid player");
+            return;
+        }
+
+        PlayerData.get().reset(target);
+        sender.sendMessage(ChatColor.YELLOW + "Reset " + target.getName() + "'s quest progress!");
+
     }
 
     @Override

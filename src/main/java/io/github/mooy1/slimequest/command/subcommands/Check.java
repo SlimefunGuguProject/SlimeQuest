@@ -21,33 +21,32 @@ public class Check extends SubCommand {
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-        if (args.length == 2) {
-            if (sender.hasPermission("slimequest.admin")) {
-
-                Player target = Bukkit.getPlayer(args[1]);
-
-                if (target != null) {
-
-                    int[] data = PlayerData.get().getIDs(target);
-
-                    if (data != null) {
-                        sender.sendMessage(new String[] {ChatColor.GREEN + target.getName() + "'s Quest progress: ", ChatColor.GREEN + Arrays.toString(data), ChatColor.GREEN + PlayerData.get().getNames(target).toString() });
-
-                    } else {
-                        sender.sendMessage(new String[] { ChatColor.RED + target.getName() + " does not have any quests completed!" });
-                    }
-
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Invalid player");
-                }
-
-            } else {
-                cmd.sendNoPerm(sender);
-            }
-
-        } else {
-            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest check <player>");
+        if (!sender.hasPermission("slimequest.admin")) {
+            cmd.sendNoPerm(sender);
+            return;
         }
+
+        if (args.length != 2) {
+            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest check <player>");
+            return;
+        }
+
+
+        Player target = Bukkit.getPlayer(args[1]);
+
+        if (target == null) {
+            sender.sendMessage(ChatColor.RED + "Invalid player");
+            return;
+        }
+
+        int[] data = PlayerData.get().getIDs(target);
+
+        if (data == null) {
+            sender.sendMessage(new String[]{ChatColor.RED + target.getName() + " does not have any quests completed!"});
+            return;
+        }
+
+        sender.sendMessage(new String[]{ChatColor.GREEN + target.getName() + "'s Quest progress: ", ChatColor.GREEN + Arrays.toString(data), ChatColor.GREEN + PlayerData.get().getNames(target).toString()});
     }
 
     @Override

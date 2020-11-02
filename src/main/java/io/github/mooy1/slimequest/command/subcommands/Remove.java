@@ -21,13 +21,13 @@ public class Remove extends SubCommand {
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-        if (args.length != 3) {
-            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest remove <player> <quest>");
+        if (!sender.hasPermission("slimequest.admin")) {
+            cmd.sendNoPerm(sender);
             return;
         }
 
-        if (!sender.hasPermission("slimequest.admin")) {
-            cmd.sendNoPerm(sender);
+        if (args.length != 3) {
+            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest remove <player> <quest>");
             return;
         }
 
@@ -39,7 +39,7 @@ public class Remove extends SubCommand {
         }
 
         if (!Quest.names.contains(args[2])) {
-            sender.sendMessage(ChatColor.RED + "Invalid id!");
+            sender.sendMessage(ChatColor.RED + "Invalid quests!");
             return;
         }
 
