@@ -150,7 +150,7 @@ public class Quest {
     }
 
     private static final ItemStack RED = new CustomItem(Material.RED_STAINED_GLASS_PANE, " ");
-    private static final ItemStack GREEN = new CustomItem(Material.GREEN_STAINED_GLASS_PANE, " ");
+    private static final ItemStack GREEN = new CustomItem(Material.LIME_STAINED_GLASS_PANE, " ");
 
     @ParametersAreNonnullByDefault
     public void addQuestStacks(ChestMenu menu, Player p, int stageID, int pageID) {
@@ -178,7 +178,7 @@ public class Quest {
             }
 
             if (this.reqIDs.length > 0 && !PlayerData.get().checkAll(player, this.reqIDs)) {
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1, 1);
                 MessageUtils.messageWithCD(player, ChatColor.RED + "You must complete previous quests first!", 1000);
                 return false;
             }

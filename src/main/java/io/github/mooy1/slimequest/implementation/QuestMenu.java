@@ -121,7 +121,7 @@ public class QuestMenu {
                 });
             }
 
-            return new Pair<>(new CustomItem(Material.GREEN_STAINED_GLASS_PANE, ChatColor.GREEN + "Next Stage: " + stages.get(stageID + 1).getName()), (player, i, itemStack, clickAction) -> {
+            return new Pair<>(new CustomItem(Material.LIME_STAINED_GLASS_PANE, ChatColor.GREEN + "Next Stage: " + stages.get(stageID + 1).getName()), (player, i, itemStack, clickAction) -> {
                 new QuestMenu(p, stageID + 1, 0, false);
                 return false;
             });
