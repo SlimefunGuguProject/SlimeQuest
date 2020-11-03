@@ -1,15 +1,11 @@
-package io.github.mooy1.slimequest.implementation.stages.stage1;
+package io.github.mooy1.slimequest.implementation.stages.basic;
 
 import io.github.mooy1.slimequest.implementation.Quest;
 import io.github.mooy1.slimequest.implementation.QuestPage;
 
 public class VanillaStart extends QuestPage {
     public VanillaStart() {
-        super("Vanilla Start", "Vanilla");
-    }
-
-    @Override
-    public void registerQuests() {
+        super();
         quests.add(new Quest("Wood", 0, "Punch trees...", 19, "OAK_LOG",
                 new int[] {28, 37, 38}, new int[] {}, new String[]{"OAK_LOG"}, new int[]{8}).setConsume()
         );
@@ -23,7 +19,7 @@ public class VanillaStart extends QuestPage {
                 new int[] {33, 24}, new int[]{1}, new String[]{"FURNACE"}, new int[]{1}).setConsume().setXP(777).setCustomReq("EEEE").setReward("VOID_INGOT", 1)
         );
         quests.add(new Quest("Iron", 4, "Your first ingot", 15, "IRON_INGOT",
-                new int[] {}, new int[]{2, 3}, new String[]{"IRON_INGOT"}, new int[]{1}).setReward("DIRT", 65)
+                new int[] {}, new int[]{2, 3}, new String[]{"IRON_INGOT"}, new int[]{1}).setReward("DIRT", 64)
         );
     }
 }

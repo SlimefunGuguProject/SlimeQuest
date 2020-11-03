@@ -111,6 +111,8 @@ public final class StackUtils {
 
         meta.setLore(lore);
 
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+
         meta.setDisplayName(name);
 
         item.setItemMeta(meta);

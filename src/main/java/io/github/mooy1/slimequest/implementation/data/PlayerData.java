@@ -15,26 +15,17 @@ import java.util.List;
 
 public class PlayerData {
 
-    private static PlayerData playerData;
-    protected final NamespacedKey key;
+    protected static NamespacedKey key = new NamespacedKey(SlimeQuest.getInstance(), "quest");
 
-    public PlayerData(SlimeQuest plugin) {
-        playerData = this;
-        this.key = new NamespacedKey(plugin, "quest");
-    }
-
-    @Nonnull
-    public static PlayerData get() {
-        return playerData;
-    }
+    private PlayerData() {}
 
     @Nullable
-    public int[] getIDs(@Nonnull Player p) {
+    public static int[] getIDs(@Nonnull Player p) {
          return p.getPersistentDataContainer().get(key, PersistentDataType.INTEGER_ARRAY);
     }
 
     @Nonnull
-    public List<String> getNames(@Nonnull Player p) {
+    public static List<String> getNames(@Nonnull Player p) {
         List<String> unlocked = new ArrayList<>();
 
         int[] data = getIDs(p);
@@ -53,7 +44,7 @@ public class PlayerData {
         return unlocked;
     }
 
-    public void add(@Nonnull Player p, int id) {
+    public static void add(@Nonnull Player p, int id) {
         int[] ids = new int[] { id };
 
         if (p.getPersistentDataContainer().has(key, PersistentDataType.INTEGER_ARRAY)) {
@@ -71,7 +62,7 @@ public class PlayerData {
         p.getPersistentDataContainer().set(key, PersistentDataType.INTEGER_ARRAY, ids);
     }
 
-    public void remove(@Nonnull Player p, int remove) {
+    public static void remove(@Nonnull Player p, int remove) {
 
         if (!p.getPersistentDataContainer().has(key, PersistentDataType.INTEGER_ARRAY)) {
             return;
@@ -104,15 +95,15 @@ public class PlayerData {
         p.getPersistentDataContainer().set(key, PersistentDataType.INTEGER_ARRAY, newArray);
     }
 
-    public void reset(@Nonnull Player p) {
+    public static void reset(@Nonnull Player p) {
         p.getPersistentDataContainer().remove(key);
     }
 
-    public boolean check(@Nonnull Player p, int id) {
+    public static boolean check(@Nonnull Player p, int id) {
         return ArrayUtils.contains(getIDs(p), id);
     }
 
-    public boolean checkAll(@Nonnull Player p, int[] ids) {
+    public static boolean checkAll(@Nonnull Player p, int[] ids) {
         int match = 0;
         int[] has = getIDs(p);
 

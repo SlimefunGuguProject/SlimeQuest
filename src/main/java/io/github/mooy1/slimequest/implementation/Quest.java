@@ -5,6 +5,7 @@ import io.github.mooy1.slimequest.implementation.data.PlayerData;
 import io.github.mooy1.slimequest.utils.MessageUtils;
 import io.github.mooy1.slimequest.utils.StackUtils;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
+import lombok.Getter;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
@@ -24,6 +25,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * This object represents a single quest that can be completed and all of its requirements and rewards
+ *
+ * @author Mooy1
+ *
+ * ids and addons:
+ * 0-100 vanilla
+ * 100-200 slimefun
+ * 200-250 sfcalc, extratools, moretools,
+ * 250-300 FluffyMachines
+ * 300-400 LiteXpansion
+ * 400-500 InfinityExpansion
+ *
+ */
 public class Quest {
 
     public static final List<String> names = new ArrayList<>();
@@ -33,6 +48,7 @@ public class Quest {
 
     private final ItemStack unlocked;
     private final ItemStack locked;
+    @Getter
     private final int id;
     private final String desc;
     private int levels = 0;
@@ -47,15 +63,9 @@ public class Quest {
     private String customReq = null;
 
     /**
-     * This object represents a single quest that can be completed and all of its requirements and rewards
-     * ids and addons:
-     * 0-100 vanilla
-     * 100-200 slimefun
-     * 200-250 sfcalc, extratools, moretools,
-     * 250-300 FluffyMachines
-     * 300-400 LiteXpansion
-     * 400-500 InfinityExpansion
-     *  @param name name of the quest
+     * This method creates a new {@link Quest}
+     *
+     * @param name name of the quest
      * @param id id number of quest, later quests should be higher and must be unique
      * @param desc description/guide for quest
      * @param slot slot in the quest page
@@ -142,7 +152,7 @@ public class Quest {
         if (this.reward != null) {
             lore.add(ChatColor.GREEN + "Reward: " + ItemUtils.getItemName(this.reward));
         }
-        if (this.reward != null) {
+        if (this.levels > 0) {
             lore.add(ChatColor.GREEN + "Levels: " + this.levels);
         }
 
@@ -156,7 +166,7 @@ public class Quest {
     public void addQuestStacks(ChestMenu menu, Player p, int stageID, int pageID) {
         ItemStack item;
         ItemStack extra;
-        if (PlayerData.get().check(p, this.id)) {
+        if (PlayerData.check(p, this.id)) {
             item = this.unlocked;
             extra = GREEN;
         } else {
@@ -173,11 +183,11 @@ public class Quest {
     @Nonnull
     protected ChestMenu.MenuClickHandler makeQuestHandler(int stageID, int pageID) {
         return (player, slot, itemStack, clickAction) -> {
-            if (PlayerData.get().check(player, this.id)) {
+            if (PlayerData.check(player, this.id)) {
                 return false;
             }
 
-            if (this.reqIDs.length > 0 && !PlayerData.get().checkAll(player, this.reqIDs)) {
+            if (this.reqIDs.length > 0 && !PlayerData.checkAll(player, this.reqIDs)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1, 1);
                 MessageUtils.messageWithCD(player, ChatColor.RED + "You must complete previous quests first!", 1000);
                 return false;
@@ -203,7 +213,7 @@ public class Quest {
             }
 
             if (match != this.reqItems.length) {
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_DEATH, 1, 1);
+                player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1, 1);
                 MessageUtils.messageWithCD(player, ChatColor.RED + "You do not have all the required items!", 1000);
                 return false;
             }
@@ -258,7 +268,7 @@ public class Quest {
 
         MessageUtils.messageWithCD(player, ChatColor.GREEN + "Completed quest: " + this.name, 1000);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-        PlayerData.get().add(player, this.id);
+        PlayerData.add(player, this.id);
     }
 
     public static String nameFromID(int questID) {

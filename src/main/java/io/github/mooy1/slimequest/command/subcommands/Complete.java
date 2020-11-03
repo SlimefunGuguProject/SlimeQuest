@@ -46,7 +46,7 @@ public class Complete extends SubCommand {
         int index = Quest.names.indexOf(args[2]);
         int targetID = Quest.ids.get(index);
 
-        if (PlayerData.get().check(target, targetID)) {
+        if (PlayerData.check(target, targetID)) {
             sender.sendMessage(ChatColor.RED + target.getName() + " has already completed that quest!");
             return;
         }
@@ -71,7 +71,7 @@ public class Complete extends SubCommand {
 
                 if (p != null && args.length == 3) {
                     tabs.addAll(Quest.names);
-                    tabs.removeAll(PlayerData.get().getNames(p));
+                    tabs.removeAll(PlayerData.getNames(p));
                 }
             }
         }

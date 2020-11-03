@@ -38,7 +38,7 @@ public class Reset extends SubCommand {
             return;
         }
 
-        PlayerData.get().reset(target);
+        PlayerData.reset(target);
         sender.sendMessage(ChatColor.YELLOW + "Reset " + target.getName() + "'s quest progress!");
 
     }

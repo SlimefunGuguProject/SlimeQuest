@@ -39,14 +39,14 @@ public class Check extends SubCommand {
             return;
         }
 
-        int[] data = PlayerData.get().getIDs(target);
+        int[] data = PlayerData.getIDs(target);
 
         if (data == null) {
             sender.sendMessage(new String[]{ChatColor.RED + target.getName() + " does not have any quests completed!"});
             return;
         }
 
-        sender.sendMessage(new String[]{ChatColor.GREEN + target.getName() + "'s Quest progress: ", ChatColor.GREEN + Arrays.toString(data), ChatColor.GREEN + PlayerData.get().getNames(target).toString()});
+        sender.sendMessage(new String[]{ChatColor.GREEN + target.getName() + "'s Quest progress: ", ChatColor.GREEN + Arrays.toString(data), ChatColor.GREEN + PlayerData.getNames(target).toString()});
     }
 
     @Override

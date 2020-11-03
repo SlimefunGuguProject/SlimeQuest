@@ -46,12 +46,12 @@ public class Remove extends SubCommand {
         int index = Quest.names.indexOf(args[2]);
         int targetID = Quest.ids.get(index);
 
-        if (!PlayerData.get().check(target, targetID)) {
+        if (!PlayerData.check(target, targetID)) {
             sender.sendMessage(ChatColor.RED + target.getName() + " hasn't completed that quest!");
             return;
         }
 
-        PlayerData.get().remove(target, targetID);
+        PlayerData.remove(target, targetID);
         sender.sendMessage(ChatColor.YELLOW + "Removed quest " + args[2] + " from " + target.getName() + "!");
     }
 
@@ -69,7 +69,7 @@ public class Remove extends SubCommand {
                 Player p = Bukkit.getPlayer(args[1]);
 
                 if (p != null && args.length == 3) {
-                    tabs.addAll(PlayerData.get().getNames(p));
+                    tabs.addAll(PlayerData.getNames(p));
                 }
             }
         }
