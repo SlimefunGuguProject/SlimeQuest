@@ -2,6 +2,7 @@ package io.github.mooy1.slimequest.implementation;
 
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.implementation.stages.VanillaBasic;
 import io.github.mooy1.slimequest.utils.MessageUtils;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
@@ -31,6 +32,9 @@ public class QuestRegistry implements Listener {
 
     public static final HashMap<Player, Pair<Integer, Integer>> history = new HashMap<>();
     public static final List<QuestStage> stages = new ArrayList<>();
+    public static final QuestStage[] allStages = {
+            new VanillaBasic()
+    };
 
     public QuestRegistry(SlimeQuest instance) {
         PluginManager manager = instance.getServer().getPluginManager();
@@ -38,14 +42,15 @@ public class QuestRegistry implements Listener {
         List<String> plugins = new ArrayList<>();
 
         //register stages
-        for (QuestStage.Type type : QuestStage.Type.values()) {
+        for (QuestStage stage : allStages) {
 
-            String req = type.getReqAddon();
+            String req = stage.getReq();
 
             //check for required addons
-            if ((plugins.contains(req) || req.equals("Vanilla") || manager.isPluginEnabled(req)) && type.getPages().length > 0) {
+            if (plugins.contains(req) || req.equals("Vanilla") || manager.isPluginEnabled(req)) {
 
-                stages.add(new QuestStage(type));
+                stage.addPages();
+                stages.add(stage);
 
                 if (!plugins.contains(req)) {
                     plugins.add(req);
@@ -87,7 +92,7 @@ public class QuestRegistry implements Listener {
 
         //background
         for (int i = 0 ; i < 36 ; i++) {
-            menu.addItem(i, QuestMenu.BACKGROUND, ChestMenuUtils.getEmptyClickHandler());
+            menu.addItem(i, NONE, ChestMenuUtils.getEmptyClickHandler());
         }
 
         //add stages
@@ -95,11 +100,11 @@ public class QuestRegistry implements Listener {
 
             QuestStage stage = stages.get(i);
 
-            if (stage.getRequiredID() > -1 && !PlayerData.check(p, stage.getRequiredID())) {
+            if (stage.getReqID() > -1 && !PlayerData.check(p, stage.getReqID())) {
                 ItemStack item = stage.getItem().clone();
                 item.setType(Material.BARRIER);
                 menu.addItem(slotFromCounter(i), item, (player, slot, itemStack, clickAction) -> {
-                    MessageUtils.messageWithCD(p, ChatColor.RED + "You must complete the quest: " + Quest.nameFromID(stages.get(slot - 1).getRequiredID()) + " first!", 1000);
+                    MessageUtils.messageWithCD(p, ChatColor.RED + "You must complete the quest: " + Quest.nameFromID(stages.get(slot - 1).getReqID()) + " first!", 1000);
                     return false;
                 });
                 continue;
@@ -114,7 +119,7 @@ public class QuestRegistry implements Listener {
 
         //empty stage spots
         for (int i = stages.size() ; i < 14 ; i++) {
-            menu.addItem(slotFromCounter(i), NONE);
+            menu.addItem(slotFromCounter(i), QuestMenu.BACKGROUND);
         }
 
         menu.open(p);

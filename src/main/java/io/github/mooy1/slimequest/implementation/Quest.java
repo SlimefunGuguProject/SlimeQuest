@@ -53,9 +53,11 @@ public class Quest {
     private final String desc;
     private int levels = 0;
     private final String name;
+    @Getter
     private final int[] reqIDs;
     private final String[] reqItems;
     private final int[] reqAmounts;
+    @Getter
     private final int slot;
     private final int[] menuSlots;
     private ItemStack reward = null;
@@ -64,20 +66,19 @@ public class Quest {
 
     /**
      * This method creates a new {@link Quest}
-     *
      * @param name name of the quest
      * @param id id number of quest, later quests should be higher and must be unique
-     * @param desc description/guide for quest
-     * @param slot slot in the quest page
-     * @param displayItemID the material of the display item as a string
-     * @param menuSlots slots of the quest page that will be affected when the quest is completed
      * @param reqIDs previous quests that must be completed first
+     * @param desc description/guide for quest
+     * @param displayItemID the material of the display item as a string
+     * @param slot slot in the quest page
+     * @param menuSlots slots of the quest page that will be affected when the quest is completed
      * @param reqItems required item material ids
      * @param reqAmounts amount of each required item
      */
     @ParametersAreNonnullByDefault
-    public Quest(String name, int id, String desc, int slot, String displayItemID,
-                 int[] menuSlots, int[] reqIDs, String[] reqItems, int[] reqAmounts) {
+    public Quest(String name, int id, int[] reqIDs, String desc, String displayItemID, int slot,
+                 int[] menuSlots, String[] reqItems, int[] reqAmounts) {
 
         quests.add(this);
         names.add(name);
@@ -159,8 +160,8 @@ public class Quest {
         StackUtils.insertLoreAndRename(item, lore, name);
     }
 
-    private static final ItemStack RED = new CustomItem(Material.RED_STAINED_GLASS_PANE, " ");
-    private static final ItemStack GREEN = new CustomItem(Material.LIME_STAINED_GLASS_PANE, " ");
+    public static final ItemStack RED = new CustomItem(Material.RED_STAINED_GLASS_PANE, " ");
+    public static final ItemStack GREEN = new CustomItem(Material.LIME_STAINED_GLASS_PANE, " ");
 
     @ParametersAreNonnullByDefault
     public void addQuestStacks(ChestMenu menu, Player p, int stageID, int pageID) {
@@ -176,7 +177,7 @@ public class Quest {
         menu.addItem(this.slot, item, this.makeQuestHandler(stageID, pageID));
 
         for (int slot : this.menuSlots) {
-            menu.addItem(slot, extra, ChestMenuUtils.getEmptyClickHandler());
+            menu.addItem(slot, extra);
         }
     }
 

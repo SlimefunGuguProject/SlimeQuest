@@ -47,7 +47,7 @@ public class QuestMenu {
     }
 
     public void open() {
-        ChestMenu menu = new ChestMenu("&8Stage " + stages.get(stageID).getName());
+        ChestMenu menu = new ChestMenu("&8" + stages.get(stageID).getName());
         menu.setEmptySlotsClickable(false);
 
         //premake background
