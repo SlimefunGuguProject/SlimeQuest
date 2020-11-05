@@ -1,6 +1,7 @@
-package io.github.mooy1.slimequest.implementation;
+package io.github.mooy1.slimequest.implementation.items;
 
 import io.github.mooy1.slimequest.SlimeQuest;
+import io.github.mooy1.slimequest.implementation.QuestRegistry;
 import io.github.thebusybiscuit.slimefun4.api.events.PlayerRightClickEvent;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Objects.Category;
@@ -9,8 +10,10 @@ import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class QuestBook extends SlimefunItem implements Listener {
@@ -31,6 +34,14 @@ public class QuestBook extends SlimefunItem implements Listener {
         if (slimefunItem instanceof QuestBook) {
             QuestRegistry.openBook(e.getPlayer(), e.getPlayer().isSneaking());
             e.cancel();
+        }
+    }
+
+    @EventHandler
+    public void onNewPlayerJoin(PlayerJoinEvent e) {
+        Player p = e.getPlayer();
+        if (!p.hasPlayedBefore()) {
+            p.getInventory().addItem(QUESTBOOK);
         }
     }
 }

@@ -4,7 +4,10 @@ import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
 import io.github.mooy1.slimequest.implementation.Quest;
-import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.implementation.QuestPage;
+import io.github.mooy1.slimequest.implementation.QuestRegistry;
+import io.github.mooy1.slimequest.implementation.QuestStage;
+import io.github.mooy1.slimequest.implementation.data.QuestData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,18 +19,14 @@ import java.util.List;
 
 public class Complete extends SubCommand {
     public Complete(SlimeQuest plugin, QuestCommand cmd) {
-        super(plugin, cmd, "complete", "completes a quest for a player", false);
+        super(plugin, cmd, "complete", "completes a quest for a player", true);
     }
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-        if (args.length != 3) {
-            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest complete <player> <quest>");
-            return;
-        }
 
-        if (!sender.hasPermission("slimequest.admin")) {
-            cmd.sendNoPerm(sender);
+        if (args.length != 4 || !(args[2].equals("quest") || args[2].equals("stage"))) {
+            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest complete <player> <quest/stage> <name>");
             return;
         }
 
@@ -38,40 +37,77 @@ public class Complete extends SubCommand {
             return;
         }
 
-        if (!Quest.names.contains(args[2])) {
-            sender.sendMessage(ChatColor.RED + "Invalid quest!");
-            return;
+        if (args[2].equals("quest")) { //quest
+
+            if (!Quest.names.contains(args[3])) {
+                sender.sendMessage(ChatColor.RED + "Invalid quest!");
+                return;
+            }
+
+            int index = Quest.names.indexOf(args[3]);
+            int targetID = Quest.ids.get(index);
+
+            if (QuestData.check(target, targetID)) {
+                sender.sendMessage(ChatColor.RED + target.getName() + " has already completed that quest!");
+                return;
+            }
+
+            Quest.quests.get(index).giveRewards(target, target.getInventory(), target.getInventory().getStorageContents());
+            Quest.quests.get(index).giveUnlock(target, true);
+            sender.sendMessage(ChatColor.GREEN + "Completed quest " + args[3] + " for " + target.getName());
+
+        } else if (args[2].equals("stage")) { //stage
+
+            if (!QuestRegistry.stageNames.contains(args[3])) {
+                sender.sendMessage(ChatColor.RED + "Invalid stage!");
+                return;
+            }
+
+            QuestStage stage = QuestRegistry.stages.get(QuestRegistry.stageNames.indexOf(args[3]));
+
+            for (QuestPage page : stage.pages) {
+                for (Quest quest : page.quests) {
+                    if (QuestData.check(target, quest.getId())) continue;
+                    quest.giveRewards(target, target.getInventory(), target.getInventory().getStorageContents());
+                    quest.giveUnlock(target, true);
+                }
+            }
+
+            sender.sendMessage(ChatColor.GREEN + "Completed stage " + stage.getName() + " for " + target.getName());
         }
-
-        int index = Quest.names.indexOf(args[2]);
-        int targetID = Quest.ids.get(index);
-
-        if (PlayerData.check(target, targetID)) {
-            sender.sendMessage(ChatColor.RED + target.getName() + " has already completed that quest!");
-            return;
-        }
-
-        Quest.quests.get(index).giveRewards(target, target.getInventory(), target.getInventory().getStorageContents());
-        Quest.quests.get(index).giveUnlock(target, true);
-        sender.sendMessage(ChatColor.GREEN + "Completed quest " + args[2] + " for " + target.getName());
     }
 
     @Override
     public List<String> onTab(@Nonnull CommandSender sender, @Nonnull String[] args) {
         List<String> tabs = new ArrayList<>();
         if (sender.hasPermission("slimequest.admin")) {
-            if (args.length == 2) {
-
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    tabs.add(p.getName());
+            switch (args.length) {
+                case 2: {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        tabs.add(p.getName());
+                    }
+                    break;
                 }
+                case 3: {
+                    tabs.add("quest");
+                    tabs.add("stage");
+                    break;
+                }
+                case 4: {
+                    if (args[2].equals("quest")) {
 
-            } else {
-                Player p = Bukkit.getPlayer(args[1]);
+                        Player p = Bukkit.getPlayer(args[1]);
 
-                if (p != null && args.length == 3) {
-                    tabs.addAll(Quest.names);
-                    tabs.removeAll(PlayerData.getNames(p));
+                        if (p != null) {
+                            tabs.addAll(Quest.names);
+                            tabs.removeAll(QuestData.getNames(p));
+                        }
+
+                    } else if (args[2].equals("stage")) {
+
+                        tabs.addAll(QuestRegistry.stageNames);
+                    }
+                    break;
                 }
             }
         }

@@ -40,7 +40,13 @@ public final class StackUtils {
             }
         }
 
-        return item.getType().toString();
+        String id = item.getType().toString();
+
+        if (id.equals("COPPER_INGOT")) {
+            id = "MC_COPPER_INGOT";
+        }
+
+        return id;
     }
 
     @Nonnull
@@ -54,7 +60,13 @@ public final class StackUtils {
 
         } else {
 
-            Material material = Material.getMaterial(id);
+            String changedID = id;
+
+            if (id.equals("MC_COPPER_INGOT")) {
+                changedID = "COPPER_INGOT";
+            }
+
+            Material material = Material.getMaterial(changedID);
 
             if (material != null){
 
@@ -77,7 +89,13 @@ public final class StackUtils {
 
         } else {
 
-            Material material = Material.getMaterial(id);
+            String changedID = id;
+
+            if (id.equals("MC_COPPER_INGOT")) {
+                changedID = "COPPER_INGOT";
+            }
+
+            Material material = Material.getMaterial(changedID);
 
             if (material != null){
 
@@ -90,7 +108,7 @@ public final class StackUtils {
     }
 
     @ParametersAreNonnullByDefault
-    public static void insertLoreAndRename(ItemStack item, List<String> lores, String name) {
+    public static void insertLoreAndRename(ItemStack item, List<String> lores, @Nullable String name) {
         ItemMeta meta = item.getItemMeta();
 
         if (meta == null) return;
@@ -113,7 +131,9 @@ public final class StackUtils {
 
         meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
-        meta.setDisplayName(name);
+        if (name != null) {
+            meta.setDisplayName(name);
+        }
 
         item.setItemMeta(meta);
     }

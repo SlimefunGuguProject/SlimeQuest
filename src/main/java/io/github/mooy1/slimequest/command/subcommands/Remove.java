@@ -4,7 +4,7 @@ import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
 import io.github.mooy1.slimequest.implementation.Quest;
-import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.implementation.data.QuestData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,15 +16,11 @@ import java.util.List;
 
 public class Remove extends SubCommand {
     public Remove(SlimeQuest plugin, QuestCommand cmd) {
-        super(plugin, cmd, "remove", "removes a quest from a player", false);
+        super(plugin, cmd, "remove", "removes a quest from a player", true);
     }
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-        if (!sender.hasPermission("slimequest.admin")) {
-            cmd.sendNoPerm(sender);
-            return;
-        }
 
         if (args.length != 3) {
             sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest remove <player> <quest>");
@@ -46,12 +42,12 @@ public class Remove extends SubCommand {
         int index = Quest.names.indexOf(args[2]);
         int targetID = Quest.ids.get(index);
 
-        if (!PlayerData.check(target, targetID)) {
+        if (!QuestData.check(target, targetID)) {
             sender.sendMessage(ChatColor.RED + target.getName() + " hasn't completed that quest!");
             return;
         }
 
-        PlayerData.remove(target, targetID);
+        QuestData.remove(target, targetID);
         sender.sendMessage(ChatColor.YELLOW + "Removed quest " + args[2] + " from " + target.getName() + "!");
     }
 
@@ -69,7 +65,7 @@ public class Remove extends SubCommand {
                 Player p = Bukkit.getPlayer(args[1]);
 
                 if (p != null && args.length == 3) {
-                    tabs.addAll(PlayerData.getNames(p));
+                    tabs.addAll(QuestData.getNames(p));
                 }
             }
         }

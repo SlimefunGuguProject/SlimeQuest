@@ -13,11 +13,11 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerData {
+public class QuestData {
 
     protected static NamespacedKey key = new NamespacedKey(SlimeQuest.getInstance(), "quest");
 
-    private PlayerData() {}
+    private QuestData() {}
 
     @Nullable
     public static int[] getIDs(@Nonnull Player p) {
@@ -45,6 +45,9 @@ public class PlayerData {
     }
 
     public static void add(@Nonnull Player p, int id) {
+
+        if (check(p, id)) return;
+
         int[] ids = new int[] { id };
 
         if (p.getPersistentDataContainer().has(key, PersistentDataType.INTEGER_ARRAY)) {

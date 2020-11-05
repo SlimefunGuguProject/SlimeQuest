@@ -4,6 +4,7 @@ import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
 import io.github.mooy1.slimequest.implementation.Quest;
+import io.github.mooy1.slimequest.implementation.QuestRegistry;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -12,38 +13,28 @@ import java.util.ArrayList;
 
 public class List extends SubCommand {
     public List(SlimeQuest plugin, QuestCommand cmd) {
-        super(plugin, cmd, "list", "lists all registered quests", false);
+        super(plugin, cmd, "list", "lists registered stages and quests", true);
     }
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
 
-        if (!sender.hasPermission("slimequest.admin")) {
-            cmd.sendNoPerm(sender);
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest list <stages/quests>");
             return;
         }
 
-        if (args.length != 2) {
-            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest list <quests/names/ids>");
+        if (args[1].equals("stages")) {
+            sender.sendMessage(ChatColor.GREEN + QuestRegistry.stageNames.toString());
             return;
         }
 
         if (args[1].equals("quests")) {
-            sender.sendMessage(ChatColor.GREEN + Quest.quests.toString());
-            return;
-        }
-
-        if (args[1].equals("names")) {
             sender.sendMessage(ChatColor.GREEN + Quest.names.toString());
             return;
         }
 
-        if (args[1].equals("ids")) {
-            sender.sendMessage(ChatColor.GREEN + Quest.ids.toString());
-            return;
-        }
-
-        sender.sendMessage(ChatColor.RED + "Invalid input! Valid inputs are: 'quests', 'names', 'ids'");
+        sender.sendMessage(ChatColor.RED + "Invalid input!");
 
     }
 
@@ -53,9 +44,8 @@ public class List extends SubCommand {
         if (sender.hasPermission("slimequest.admin")) {
             if (args.length == 2) {
 
+                tabs.add("stages");
                 tabs.add("quests");
-                tabs.add("names");
-                tabs.add("ids");
 
             }
         }

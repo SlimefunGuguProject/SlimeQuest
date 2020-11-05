@@ -3,7 +3,7 @@ package io.github.mooy1.slimequest.command.subcommands;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
-import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.implementation.data.QuestData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,16 +15,11 @@ import java.util.List;
 
 public class Reset extends SubCommand {
     public Reset(SlimeQuest plugin, QuestCommand cmd) {
-        super(plugin, cmd, "reset", "resets a player's quest progress", false);
+        super(plugin, cmd, "reset", "resets a player's quest progress", true);
     }
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-
-        if (!sender.hasPermission("slimequest.admin")) {
-            cmd.sendNoPerm(sender);
-            return;
-        }
 
         if (args.length != 2) {
             sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest reset <player>");
@@ -38,7 +33,7 @@ public class Reset extends SubCommand {
             return;
         }
 
-        PlayerData.reset(target);
+        QuestData.reset(target);
         sender.sendMessage(ChatColor.YELLOW + "Reset " + target.getName() + "'s quest progress!");
 
     }

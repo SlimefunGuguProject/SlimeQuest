@@ -3,7 +3,7 @@ package io.github.mooy1.slimequest.command.subcommands;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
-import io.github.mooy1.slimequest.implementation.QuestBook;
+import io.github.mooy1.slimequest.implementation.items.QuestBook;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;

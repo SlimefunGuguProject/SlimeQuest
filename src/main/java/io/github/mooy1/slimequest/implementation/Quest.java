@@ -1,10 +1,9 @@
 package io.github.mooy1.slimequest.implementation;
 
 import io.github.mooy1.slimequest.SlimeQuest;
-import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.implementation.data.QuestData;
 import io.github.mooy1.slimequest.utils.MessageUtils;
 import io.github.mooy1.slimequest.utils.StackUtils;
-import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import lombok.Getter;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
@@ -44,10 +43,10 @@ public class Quest {
     public static final List<String> names = new ArrayList<>();
     public static final List<Integer> ids = new ArrayList<>();
     public static final List<Quest> quests = new ArrayList<>();
-    private static final int base = SlimeQuest.getInstance().config.getInt("options.xp-reward-base");
+    private static final int base = SlimeQuest.getInstance().getConfig().getInt("options.xp-reward-base");
 
-    private final ItemStack unlocked;
-    private final ItemStack locked;
+    private ItemStack unlocked = null;
+    private ItemStack locked = null;
     @Getter
     private final int id;
     private final String desc;
@@ -63,6 +62,7 @@ public class Quest {
     private ItemStack reward = null;
     private boolean consume = false;
     private String customReq = null;
+    private String customDisplay = null;
 
     /**
      * This method creates a new {@link Quest}
@@ -70,14 +70,13 @@ public class Quest {
      * @param id id number of quest, later quests should be higher and must be unique
      * @param reqIDs previous quests that must be completed first
      * @param desc description/guide for quest
-     * @param displayItemID the material of the display item as a string
      * @param slot slot in the quest page
      * @param menuSlots slots of the quest page that will be affected when the quest is completed
-     * @param reqItems required item material ids
+     * @param reqItems required item ids
      * @param reqAmounts amount of each required item
      */
     @ParametersAreNonnullByDefault
-    public Quest(String name, int id, int[] reqIDs, String desc, String displayItemID, int slot,
+    public Quest(String name, int id, int[] reqIDs, String desc, int slot,
                  int[] menuSlots, String[] reqItems, int[] reqAmounts) {
 
         quests.add(this);
@@ -92,30 +91,53 @@ public class Quest {
         this.slot = slot;
         this.reqItems = reqItems;
         this.reqAmounts = reqAmounts;
-        ItemStack item = StackUtils.getItemFromIDorElse(displayItemID, 1, Material.BARRIER);
+
+        makeDisplayItems();
+    }
+
+    public void makeDisplayItems() {
+        String id;
+        if (this.customDisplay != null) {
+            id = customDisplay;
+        } else if (this.reqItems.length > 0) {
+            id = reqItems[0];
+        } else {
+            return;
+        }
+        ItemStack item = StackUtils.getItemFromIDorElse(id.toUpperCase(), 1, Material.BARRIER);
+
         this.unlocked = item.clone();
         this.locked = item.clone();
         makeUnlockedItem(this.unlocked);
         makeLockedItem(this.locked);
     }
 
-    public Quest setReward(String id, int amount) {
+    @Nonnull
+    public Quest setReward(@Nonnull String id, int amount) {
         this.reward = StackUtils.getItemFromID(id, amount);
+        makeDisplayItems();
         return this;
     }
 
-    public Quest setCustomReq(String req) {
+    @Nonnull
+    public Quest setCustomReq(@Nonnull String req, @Nonnull String customDisplayID) {
         this.customReq = req;
+        this.customDisplay = customDisplayID;
+        makeDisplayItems();
         return this;
     }
 
+    @Nonnull
     public Quest setConsume() {
         this.consume = true;
+        makeDisplayItems();
         return this;
     }
 
+    @Nonnull
     public Quest setXP(int xp) {
         this.levels = base * xp;
+        makeDisplayItems();
         return this;
     }
 
@@ -147,8 +169,10 @@ public class Quest {
         if (this.customReq != null) {
             lore.add(ChatColor.GREEN + this.customReq);
         }
-        lore.add("");
-        lore.add(ChatColor.GREEN + "Consumes Items: " + this.consume);
+        if (this.consume) {
+            lore.add("");
+            lore.add(ChatColor.GREEN + "Consumes required items!");
+        }
         lore.add("");
         if (this.reward != null) {
             lore.add(ChatColor.GREEN + "Reward: " + ItemUtils.getItemName(this.reward));
@@ -167,7 +191,7 @@ public class Quest {
     public void addQuestStacks(ChestMenu menu, Player p, int stageID, int pageID) {
         ItemStack item;
         ItemStack extra;
-        if (PlayerData.check(p, this.id)) {
+        if (QuestData.check(p, this.id)) {
             item = this.unlocked;
             extra = GREEN;
         } else {
@@ -184,13 +208,19 @@ public class Quest {
     @Nonnull
     protected ChestMenu.MenuClickHandler makeQuestHandler(int stageID, int pageID) {
         return (player, slot, itemStack, clickAction) -> {
-            if (PlayerData.check(player, this.id)) {
+            if (QuestData.check(player, this.id)) {
                 return false;
             }
 
-            if (this.reqIDs.length > 0 && !PlayerData.checkAll(player, this.reqIDs)) {
+            if (this.reqIDs.length > 0 && !QuestData.checkAll(player, this.reqIDs)) {
                 player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1, 1);
                 MessageUtils.messageWithCD(player, ChatColor.RED + "You must complete previous quests first!", 1000);
+                return false;
+            }
+
+            if (this.customReq != null) {
+                player.playSound(player.getLocation(), Sound.BLOCK_ENDER_CHEST_CLOSE, 1, 1);
+                MessageUtils.messageWithCD(player, ChatColor.RED + "You have not met the requirements!", 1000);
                 return false;
             }
 
@@ -233,7 +263,7 @@ public class Quest {
             if (Arrays.asList(contents).contains(null)) {
                 inv.addItem(reward);
             } else {
-                MessageUtils.messageWithCD(player, ChatColor.GOLD + "Not enough room to claim!", 1000);
+                MessageUtils.message(player, ChatColor.GOLD + "Not enough room to claim!");
                 return false;
             }
         }
@@ -267,12 +297,8 @@ public class Quest {
             }
         }
 
-        MessageUtils.messageWithCD(player, ChatColor.GREEN + "Completed quest: " + this.name, 1000);
+        MessageUtils.message(player, ChatColor.GREEN + "Completed quest: " + this.name);
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-        PlayerData.add(player, this.id);
-    }
-
-    public static String nameFromID(int questID) {
-        return Quest.names.get(Quest.ids.indexOf(questID));
+        QuestData.add(player, this.id);
     }
 }

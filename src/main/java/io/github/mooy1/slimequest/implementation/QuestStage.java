@@ -24,22 +24,44 @@ public abstract class QuestStage {
     @Getter
     private final String name;
     @Getter
-    private final String req;
+    private final String reqPlugin;
     @Getter
-    private final int reqID;
+    private final int reqStageID;
+    @Getter
+    private final int stageID;
+    @Getter
+    private int finalID = -1;
 
-    public QuestStage(String name, String req, int reqID, Material mat) {
+    /**
+     * This method creates a new quest stage which initializes multiple pages
+     *
+     * @param name unique name
+     * @param reqPlugin required plugin name ex: "ExtraTools"
+     * @param stageID unique id of this stage
+     * @param reqStageID the id of the stage that must be completed before this can be started
+     * where the required stage to open this stage is, it should be from slimefun, vanilla, or this stage's addon.
+     * @param mat material of display item
+     */
+    public QuestStage(String name, int stageID, String reqPlugin, int reqStageID, Material mat) {
         this.name = name;
-        this.req = req;
-        this.reqID = reqID;
+        this.stageID = stageID;
+        this.reqPlugin = reqPlugin;
+        this.reqStageID = reqStageID;
 
         List<String> lores = new ArrayList<>();
         ItemStack item = new ItemStack(mat);
         StackUtils.insertLoreAndRename(item, lores, ChatColor.GOLD + name);
         this.item = item;
+    }
 
-        //add 'final id' to use for showing when complete
+    protected void add(QuestPage page) {
+        this.pages.add(page);
     }
 
     protected abstract void addPages();
+
+    public void findFinalID() {
+        QuestPage page = this.pages.get(this.pages.size() - 1);
+        this.finalID = page.quests.get(page.quests.size() - 1).getId();
+    }
 }

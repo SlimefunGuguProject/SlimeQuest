@@ -1,15 +1,18 @@
 package io.github.mooy1.slimequest.implementation;
 
 import io.github.mooy1.slimequest.SlimeQuest;
-import io.github.mooy1.slimequest.implementation.data.PlayerData;
-import io.github.mooy1.slimequest.implementation.stages.VanillaBasic;
+import io.github.mooy1.slimequest.implementation.data.QuestData;
+import io.github.mooy1.slimequest.implementation.stages.sf.SFMain;
+import io.github.mooy1.slimequest.implementation.stages.vanilla.Vanilla;
 import io.github.mooy1.slimequest.utils.MessageUtils;
+import io.github.mooy1.slimequest.utils.StackUtils;
 import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.Slimefun.cscorelib2.collections.Pair;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -32,8 +35,9 @@ public class QuestRegistry implements Listener {
 
     public static final HashMap<Player, Pair<Integer, Integer>> history = new HashMap<>();
     public static final List<QuestStage> stages = new ArrayList<>();
+    public static final List<String> stageNames = new ArrayList<>();
     public static final QuestStage[] allStages = {
-            new VanillaBasic()
+            new Vanilla(),
     };
 
     public QuestRegistry(SlimeQuest instance) {
@@ -44,19 +48,24 @@ public class QuestRegistry implements Listener {
         //register stages
         for (QuestStage stage : allStages) {
 
-            String req = stage.getReq();
+            String req = stage.getReqPlugin();
 
             //check for required addons
-            if (plugins.contains(req) || req.equals("Vanilla") || manager.isPluginEnabled(req)) {
+            if (!plugins.contains(req) && !req.equals("Vanilla") && !manager.isPluginEnabled(req)) continue;
 
-                stage.addPages();
-                stages.add(stage);
+            stage.addPages();
 
-                if (!plugins.contains(req)) {
-                    plugins.add(req);
-                    instance.getLogger().log(Level.INFO, "Registering " + req + " Quests...");
-                }
-            }
+            if (stage.pages.size() == 0) continue;
+
+            stage.findFinalID();
+
+            stages.add(stage);
+            stageNames.add(stage.getName().replace(" ", "-"));
+
+            if (plugins.contains(req)) continue;
+
+            plugins.add(req);
+            instance.getLogger().log(Level.INFO, "Registering " + req + " Quests...");
         }
 
         instance.getLogger().log(Level.INFO, "Quests registered!");
@@ -84,7 +93,7 @@ public class QuestRegistry implements Listener {
 
     private static final ItemStack NONE = new CustomItem(Material.BLACK_STAINED_GLASS_PANE, " ");
 
-    private static void openMain(Player p) {
+    public static void openMain(Player p) {
         history.put(p, null);
 
         ChestMenu menu = new ChestMenu("&8Stages");
@@ -100,18 +109,33 @@ public class QuestRegistry implements Listener {
 
             QuestStage stage = stages.get(i);
 
-            if (stage.getReqID() > -1 && !PlayerData.check(p, stage.getReqID())) {
+            int lambdaI = i;
+
+            if (stage.getReqStageID() > -1 && !QuestData.check(p, stages.get(stage.getReqStageID()).getFinalID())) {
                 ItemStack item = stage.getItem().clone();
                 item.setType(Material.BARRIER);
+
                 menu.addItem(slotFromCounter(i), item, (player, slot, itemStack, clickAction) -> {
-                    MessageUtils.messageWithCD(p, ChatColor.RED + "You must complete the quest: " + Quest.nameFromID(stages.get(slot - 1).getReqID()) + " first!", 1000);
+                    MessageUtils.messageWithCD(p, ChatColor.RED + "You must complete the stage: " + stageNames.get(stage.getReqStageID()) + " first!", 1000);
                     return false;
                 });
                 continue;
             }
 
-            int lambdaI = i;
-            menu.addItem(slotFromCounter(i), stage.getItem(), (player, slot, itemStack, clickAction) -> {
+            ItemStack item = stage.getItem().clone();
+            List<String> lore = new ArrayList<>();
+
+            //check if they finished the stage
+            if (stage.getFinalID() > -1 && QuestData.check(p, stage.getFinalID())) {
+                lore.add(ChatColor.GREEN + "Complete");
+                StackUtils.enchant(item);
+            } else {
+                lore.add(ChatColor.RED + "Incomplete");
+            }
+
+            StackUtils.insertLoreAndRename(item, lore, null);
+
+            menu.addItem(slotFromCounter(i), item, (player, slot, itemStack, clickAction) -> {
                 new QuestMenu(p, lambdaI, 0, false);
                 return false;
             });
@@ -121,6 +145,8 @@ public class QuestRegistry implements Listener {
         for (int i = stages.size() ; i < 14 ; i++) {
             menu.addItem(slotFromCounter(i), QuestMenu.BACKGROUND);
         }
+
+        p.playSound(p.getLocation(), Sound.ITEM_BOOK_PAGE_TURN, 1, 1);
 
         menu.open(p);
     }

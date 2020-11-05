@@ -3,7 +3,7 @@ package io.github.mooy1.slimequest.command.subcommands;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.command.SubCommand;
-import io.github.mooy1.slimequest.implementation.data.PlayerData;
+import io.github.mooy1.slimequest.implementation.data.QuestData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -16,15 +16,11 @@ import java.util.List;
 
 public class Check extends SubCommand {
     public Check(SlimeQuest plugin, QuestCommand cmd) {
-        super(plugin, cmd, "check", "checks a player's quest progress", false);
+        super(plugin, cmd, "check", "checks a player's quest progress", true);
     }
 
     @Override
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
-        if (!sender.hasPermission("slimequest.admin")) {
-            cmd.sendNoPerm(sender);
-            return;
-        }
 
         if (args.length != 2) {
             sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest check <player>");
@@ -39,14 +35,14 @@ public class Check extends SubCommand {
             return;
         }
 
-        int[] data = PlayerData.getIDs(target);
+        int[] data = QuestData.getIDs(target);
 
         if (data == null) {
             sender.sendMessage(new String[]{ChatColor.RED + target.getName() + " does not have any quests completed!"});
             return;
         }
 
-        sender.sendMessage(new String[]{ChatColor.GREEN + target.getName() + "'s Quest progress: ", ChatColor.GREEN + Arrays.toString(data), ChatColor.GREEN + PlayerData.getNames(target).toString()});
+        sender.sendMessage(new String[]{ChatColor.GREEN + target.getName() + "'s Quest progress: ", ChatColor.GREEN + Arrays.toString(data), ChatColor.GREEN + QuestData.getNames(target).toString()});
     }
 
     @Override

@@ -38,7 +38,11 @@ public class QuestCommand implements CommandExecutor, Listener {
         if (args.length > 0) {
             for (SubCommand command : commands) {
                 if (args[0].equalsIgnoreCase(command.getName())) {
-                    command.onExecute(sender, args);
+                    if (!command.isOp() || sender.hasPermission("slimequest.admin")) {
+                        command.onExecute(sender, args);
+                    } else {
+                        sendNoPerm(sender);
+                    }
                     return true;
                 }
             }
@@ -69,7 +73,7 @@ public class QuestCommand implements CommandExecutor, Listener {
         sender.sendMessage("");
 
         for (SubCommand cmd : commands) {
-            if (!cmd.isHidden()) {
+            if (!cmd.isOp() || sender.hasPermission("slimequest.admin")) {
                 sender.sendMessage(ChatColors.color("&6/sq " + cmd.getName() + " &e- " + cmd.getDescription()));
             }
         }

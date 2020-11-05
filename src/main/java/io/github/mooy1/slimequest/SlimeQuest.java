@@ -2,24 +2,26 @@ package io.github.mooy1.slimequest;
 
 import io.github.mooy1.slimequest.command.QuestCommand;
 import io.github.mooy1.slimequest.implementation.QuestRegistry;
+import io.github.mooy1.slimequest.implementation.items.AddonInfo;
 import io.github.thebusybiscuit.slimefun4.libraries.paperlib.PaperLib;
-import io.github.mooy1.slimequest.implementation.QuestBook;
+import io.github.mooy1.slimequest.implementation.items.QuestBook;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
-import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
 
 import javax.annotation.Nonnull;
 
 public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
 
     private static SlimeQuest instance;
-    public final Config config = new Config(this);
 
     @Override
     public void onEnable() {
         instance = this;
+
+        //config
+        updateConfig();
 
         //stats
         @SuppressWarnings("unused")
@@ -39,9 +41,10 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         //quests
         new QuestRegistry(this);
 
-        //item
+        //items
+        new AddonInfo().register(this);
         new QuestBook(this).register(this);
-
+        
         //commands
         new QuestCommand(this).register();
     }
@@ -65,5 +68,15 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
     @Nonnull
     public static SlimeQuest getInstance() {
         return instance;
+    }
+
+    public static void registerEvents(Listener listener) {
+        instance.getServer().getPluginManager().registerEvents(listener, instance);
+    }
+
+    private void updateConfig() {
+        getConfig().options().copyDefaults(true);
+        getConfig().options().copyHeader(true);
+        saveConfig();
     }
 }

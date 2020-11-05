@@ -4,6 +4,7 @@ import io.github.thebusybiscuit.slimefun4.utils.ChestMenuUtils;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
 import me.mrCookieSlime.Slimefun.cscorelib2.collections.Pair;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -19,8 +20,9 @@ import java.util.List;
  */
 public class QuestMenu {
 
-    private static final int PREV = 0;
-    private static final int NEXT = 8;
+    private static final int BACK = 0;
+    private static final int PREV = 45;
+    private static final int NEXT = 53;
     public static final ItemStack BACKGROUND = new CustomItem(Material.GRAY_STAINED_GLASS_PANE, " ");
     private static final List<QuestStage> stages = QuestRegistry.stages;
 
@@ -47,7 +49,7 @@ public class QuestMenu {
     }
 
     public void open() {
-        ChestMenu menu = new ChestMenu("&8" + stages.get(stageID).getName());
+        ChestMenu menu = new ChestMenu("&8" + stages.get(this.stageID).getName() + " - " + page.getName());
         menu.setEmptySlotsClickable(false);
 
         //premake background
@@ -55,25 +57,30 @@ public class QuestMenu {
             menu.addItem(i, BACKGROUND, ChestMenuUtils.getEmptyClickHandler());
         }
 
+        menu.addItem(BACK, ChestMenuUtils.getBackButton(p, ChatColor.GOLD + "To all stages"), (player, i, itemStack, clickAction) -> {
+            QuestRegistry.openMain(player);
+            return false;
+        });
+
         //next
-        Pair<ItemStack, ChestMenu.MenuClickHandler> next = makeNextButton(stageID, pageID, pages, p);
+        Pair<ItemStack, ChestMenu.MenuClickHandler> next = makeNextButton();
         menu.addItem(NEXT, next.getFirstValue(), next.getSecondValue());
 
         //previous
-        Pair<ItemStack, ChestMenu.MenuClickHandler> prev = makePrevButton(stageID, pageID, pages, p);
+        Pair<ItemStack, ChestMenu.MenuClickHandler> prev = makePrevButton();
         menu.addItem(PREV, prev.getFirstValue(), prev.getSecondValue());
 
         //add quests
-        page.makeMenu(menu, p, stageID, pageID);
+        this.page.makeMenu(menu, this.p, this.stageID, this.pageID);
 
         menu.open(p);
     }
 
-    private Pair<ItemStack, ChestMenu.MenuClickHandler> makeNextButton(int stageID, int pageID, List<QuestPage> pages, Player p) {
-        if (pageID < pages.size() - 1) {
+    private Pair<ItemStack, ChestMenu.MenuClickHandler> makeNextButton() {
+        if (this.pageID < this.pages.size() - 1) {
 
-            return new Pair<>(ChestMenuUtils.getNextButton(p, pageID + 1, pages.size()), (player, i, itemStack, clickAction) -> {
-                new QuestMenu(p, stageID, pageID + 1, false);
+            return new Pair<>(ChestMenuUtils.getNextButton(this.p, this.pageID + 1, this.pages.size()), (player, i, itemStack, clickAction) -> {
+                new QuestMenu(player, this.stageID, this.pageID + 1, false);
                 return false;
             });
         }
@@ -81,11 +88,11 @@ public class QuestMenu {
         return new Pair<>(BACKGROUND, ChestMenuUtils.getEmptyClickHandler());
     }
 
-    private Pair<ItemStack, ChestMenu.MenuClickHandler> makePrevButton(int stageID, int pageID, List<QuestPage> pages, Player p) {
+    private Pair<ItemStack, ChestMenu.MenuClickHandler> makePrevButton() {
         if (pageID > 0) {
 
-            return new Pair<>(ChestMenuUtils.getPreviousButton(p, pageID + 1, pages.size()), (player, i, itemStack, clickAction) -> {
-                new QuestMenu(p, stageID, pageID - 1, false);
+            return new Pair<>(ChestMenuUtils.getPreviousButton(this.p, this.pageID + 1, this.pages.size()), (player, i, itemStack, clickAction) -> {
+                new QuestMenu(player, this.stageID, this.pageID - 1, false);
                 return false;
             });
         }
