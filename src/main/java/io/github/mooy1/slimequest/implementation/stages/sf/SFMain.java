@@ -5,7 +5,7 @@ import org.bukkit.Material;
 
 public class SFMain extends QuestStage {
     public SFMain() {
-        super("Slimefun", 0, "Slimefun", 0, Material.SLIME_BLOCK);
+        super("Slimefun", "Slimefun", 0, Material.SLIME_BLOCK);
     }
 
     @Override

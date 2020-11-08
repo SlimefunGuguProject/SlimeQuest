@@ -38,6 +38,7 @@ public class QuestRegistry implements Listener {
     public static final List<String> stageNames = new ArrayList<>();
     public static final QuestStage[] allStages = {
             new Vanilla(),
+            new SFMain()
     };
 
     public QuestRegistry(SlimeQuest instance) {

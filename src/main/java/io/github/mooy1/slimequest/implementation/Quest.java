@@ -6,6 +6,7 @@ import io.github.mooy1.slimequest.utils.MessageUtils;
 import io.github.mooy1.slimequest.utils.StackUtils;
 import lombok.Getter;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.ChestMenu;
+import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.cscorelib2.inventory.ItemUtils;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
 import org.bukkit.ChatColor;
@@ -95,6 +96,58 @@ public class Quest {
         makeDisplayItems();
     }
 
+    @ParametersAreNonnullByDefault
+    public Quest(String name, int id, int[] reqIDs, String desc, int slot,
+                 int[] menuSlots, Material[] reqMaterials, int[] reqAmounts) {
+
+        quests.add(this);
+        names.add(name);
+        ids.add(id);
+
+        this.id = id;
+        this.menuSlots = menuSlots;
+        this.name = name;
+        this.desc = desc;
+        this.reqIDs = reqIDs;
+        this.slot = slot;
+        String[] reqItems = new String[reqMaterials.length];
+        int i = 0;
+        for (Material material : reqMaterials) {
+            reqItems[i] = material.toString();
+            i++;
+        }
+        this.reqItems = reqItems;
+        this.reqAmounts = reqAmounts;
+
+        makeDisplayItems();
+    }
+
+    @ParametersAreNonnullByDefault
+    public Quest(String name, int id, int[] reqIDs, String desc, int slot,
+                 int[] menuSlots, SlimefunItemStack[] reqSlimefunItems, int[] reqAmounts) {
+
+        quests.add(this);
+        names.add(name);
+        ids.add(id);
+
+        this.id = id;
+        this.menuSlots = menuSlots;
+        this.name = name;
+        this.desc = desc;
+        this.reqIDs = reqIDs;
+        this.slot = slot;
+        String[] reqItems = new String[reqSlimefunItems.length];
+        int i = 0;
+        for (SlimefunItemStack slimefunItemStack : reqSlimefunItems) {
+            reqItems[i] = Objects.requireNonNull(slimefunItemStack.getItem()).getId();
+            i++;
+        }
+        this.reqItems = reqItems;
+        this.reqAmounts = reqAmounts;
+
+        makeDisplayItems();
+    }
+
     public void makeDisplayItems() {
         String id;
         if (this.customDisplay != null) {
@@ -115,6 +168,20 @@ public class Quest {
     @Nonnull
     public Quest setReward(@Nonnull String id, int amount) {
         this.reward = StackUtils.getItemFromID(id, amount);
+        makeDisplayItems();
+        return this;
+    }
+
+    @Nonnull
+    public Quest setReward(@Nonnull Material material, int amount) {
+        this.reward = new ItemStack(material, amount);
+        makeDisplayItems();
+        return this;
+    }
+
+    @Nonnull
+    public Quest setReward(@Nonnull SlimefunItemStack slimefunItemStack, int amount) {
+        this.reward = new SlimefunItemStack(slimefunItemStack, amount);
         makeDisplayItems();
         return this;
     }

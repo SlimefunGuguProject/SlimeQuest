@@ -5,7 +5,7 @@ import org.bukkit.Material;
 
 public class IEMachines extends QuestStage {
     public IEMachines() {
-        super("InfinityExpansion Machines", 0, "InfinityExpansion", -1, Material.BLAST_FURNACE);
+        super("InfinityExpansion Machines", "InfinityExpansion", -1, Material.BLAST_FURNACE);
     }
 
     @Override

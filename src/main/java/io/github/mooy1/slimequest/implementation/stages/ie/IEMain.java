@@ -5,7 +5,7 @@ import org.bukkit.Material;
 
 public class IEMain extends QuestStage {
     public IEMain() {
-        super("InfinityExpansion", 0, "InfinityExpansion", -1, Material.NETHER_STAR);
+        super("InfinityExpansion", "InfinityExpansion", -1, Material.NETHER_STAR);
     }
 
     @Override

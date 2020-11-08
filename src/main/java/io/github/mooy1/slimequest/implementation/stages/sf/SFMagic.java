@@ -5,7 +5,7 @@ import org.bukkit.Material;
 
 public class SFMagic extends QuestStage {
     public SFMagic() {
-        super("Slimefun Magic", 0, "Slimefun", -1, Material.BLAZE_POWDER);
+        super("Slimefun Magic", "Slimefun", -1, Material.BLAZE_POWDER);
     }
 
     @Override
