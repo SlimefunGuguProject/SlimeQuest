@@ -11,6 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import io.github.thebusybiscuit.slimefun4.api.SlimefunAddon;
 
 import javax.annotation.Nonnull;
+import java.util.logging.Level;
 
 public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
 
@@ -32,7 +33,7 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         //auto update
         /*if (getDescription().getVersion().startsWith("DEV - ")) {
             getLogger().log(Level.INFO, "Starting auto update");
-            Updater updater = new GitHubBuildsUpdater(this, this.getFile(), "Mooy1/InfinityExpansion/master");
+            Updater updater = new GitHubBuildsUpdater(this, this.getFile(), "Mooy1/SlimeQuest/master");
             updater.start();
         } else {
             getLogger().log(Level.WARNING, "You must be on a DEV build to auto update!");
@@ -78,5 +79,11 @@ public class SlimeQuest extends JavaPlugin implements SlimefunAddon, Listener {
         getConfig().options().copyDefaults(true);
         getConfig().options().copyHeader(true);
         saveConfig();
+    }
+
+    public static void log(Level level , String... logs) {
+        for (String log : logs) {
+            instance.getLogger().log(level, log);
+        }
     }
 }

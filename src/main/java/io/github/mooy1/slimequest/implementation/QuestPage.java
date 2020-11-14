@@ -38,7 +38,7 @@ public class QuestPage {
         return this;
     }
 
-    @ParametersAreNonnullByDefault
+
     public final void makeMenu(ChestMenu menu, Player p, int stageID, int pageID) {
         for (Quest quest : this.quests) {
             quest.addQuestStacks(menu, p, stageID, pageID);
