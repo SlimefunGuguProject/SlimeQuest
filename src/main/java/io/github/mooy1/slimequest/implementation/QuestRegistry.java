@@ -2,7 +2,6 @@ package io.github.mooy1.slimequest.implementation;
 
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.implementation.data.QuestData;
-import io.github.mooy1.slimequest.implementation.stages.sf.SFBasic;
 import io.github.mooy1.slimequest.implementation.stages.sf.SFMain;
 import io.github.mooy1.slimequest.implementation.stages.vanilla.Vanilla;
 import io.github.mooy1.slimequest.utils.MessageUtils;
@@ -39,7 +38,6 @@ public class QuestRegistry implements Listener {
     public static final List<String> stageNames = new ArrayList<>();
     public static final QuestStage[] allStages = {
             new Vanilla(),
-            new SFBasic(),
             new SFMain()
     };
 
