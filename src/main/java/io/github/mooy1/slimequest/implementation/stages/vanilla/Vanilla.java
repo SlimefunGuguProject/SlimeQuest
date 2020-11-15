@@ -62,7 +62,7 @@ public class Vanilla extends QuestStage implements Listener {
     }
 
     /**
-     * This handler unlocks the nether quest and is an example of how to have custom req quests
+     * This handler unlocks the nether quest and is an example of how to have custom requests
      */
     @EventHandler
     public void onEnterNether(PlayerTeleportEvent e) {
