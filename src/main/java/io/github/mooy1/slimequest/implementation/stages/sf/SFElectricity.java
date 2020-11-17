@@ -5,7 +5,7 @@ import org.bukkit.Material;
 
 public class SFElectricity extends QuestStage {
     public SFElectricity() {
-        super("Slimefun Electricity", "Slimefun", -1, Material.HONEY_BLOCK);
+        super("Slimefun Electricity", "Slimefun", 1, Material.REDSTONE);
     }
 
     @Override

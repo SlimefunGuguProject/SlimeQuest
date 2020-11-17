@@ -16,7 +16,7 @@ import org.bukkit.event.Listener;
 
 public class SFBasic extends QuestStage implements Listener {
     public SFBasic() {
-        super("Slimefun Basics", "Slimefun", -1, Material.STICK);
+        super("Slimefun Basics", "Slimefun", -1, Material.SLIME_BALL);
     }
 
     @Override

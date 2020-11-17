@@ -3,6 +3,7 @@ package io.github.mooy1.slimequest.implementation;
 import io.github.mooy1.slimequest.SlimeQuest;
 import io.github.mooy1.slimequest.implementation.data.QuestData;
 import io.github.mooy1.slimequest.implementation.stages.sf.SFBasic;
+import io.github.mooy1.slimequest.implementation.stages.sf.SFElectricity;
 import io.github.mooy1.slimequest.implementation.stages.sf.SFMain;
 import io.github.mooy1.slimequest.implementation.stages.vanilla.Vanilla;
 import io.github.mooy1.slimequest.utils.MessageUtils;
@@ -30,7 +31,6 @@ import java.util.logging.Level;
  * This class holds the questbook history for each player and the registered quest stages
  *
  * @author Mooy1
- *
  */
 public class QuestRegistry implements Listener {
 
@@ -38,9 +38,10 @@ public class QuestRegistry implements Listener {
     public static final List<QuestStage> stages = new ArrayList<>();
     public static final List<String> stageNames = new ArrayList<>();
     public static final QuestStage[] allStages = {
-            new Vanilla(),
-            new SFBasic(),
-            new SFMain()
+        new Vanilla(),
+        new SFBasic(),
+        new SFMain(),
+        new SFElectricity()
     };
 
     public QuestRegistry(SlimeQuest instance) {
@@ -103,12 +104,12 @@ public class QuestRegistry implements Listener {
         menu.setEmptySlotsClickable(false);
 
         //background
-        for (int i = 0 ; i < 36 ; i++) {
+        for (int i = 0; i < 36; i++) {
             menu.addItem(i, NONE, ChestMenuUtils.getEmptyClickHandler());
         }
 
         //add stages
-        for (int i = 0 ; i < stages.size() ; i++) {
+        for (int i = 0; i < stages.size(); i++) {
 
             QuestStage stage = stages.get(i);
 
@@ -145,7 +146,7 @@ public class QuestRegistry implements Listener {
         }
 
         //empty stage spots
-        for (int i = stages.size() ; i < 14 ; i++) {
+        for (int i = stages.size(); i < 14; i++) {
             menu.addItem(slotFromCounter(i), QuestMenu.BACKGROUND);
         }
 
