@@ -31,9 +31,17 @@ public class SFBasic extends QuestStage implements Listener {
             .add(new Quest("Foundry", 122, new int[]{121}, "Time to make some alloys",
                 23, new int[]{32}, new String[0], new int[0])
                 .setCustomReq("Use a Smeltery", "FLINT_AND_STEEL").setXP(3))
-            .add(new Quest("Magnetic", 123, new int[]{120, 122}, "Attractive, right?",
-                41, new int[0], new SlimefunItemStack[]{SlimefunItems.MAGNET}, new int[]{1})
+            .add(new Quest("Magnetic", 123, new int[]{120, 122}, "You need to be a little more attractive",
+                41, new int[]{42, 43, 44}, new SlimefunItemStack[]{SlimefunItems.MAGNET}, new int[]{1})
                 .setReward(SlimefunItems.BATTERY, 1))
+        );
+        add(new QuestPage("Moving On", new int[]{30, 33, 36, 37, 38, 39, 40, 41, 42})
+            .add(new Quest("Electric", 124, new int[]{122, 123}, "Shocking, right?",
+                21, new int[0], new SlimefunItemStack[]{SlimefunItems.ELECTRIC_MOTOR}, new int[]{1})
+                .setReward(SlimefunItems.DAMASCUS_STEEL_INGOT, 4))
+            .add(new Quest("Magic", 125, new int[]{122}, "I bet you have no idea what this is",
+                24, new int[0], new SlimefunItemStack[]{SlimefunItems.MAGIC_LUMP_1}, new int[]{16})
+                .setReward(SlimefunItems.MAGIC_LUMP_1, 16))
         );
 
         SlimeQuest.registerEvents(this);
