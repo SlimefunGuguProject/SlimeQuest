@@ -26,7 +26,7 @@ public class Complete extends SubCommand {
     public void onExecute(@Nonnull CommandSender sender, @Nonnull String[] args) {
 
         if (args.length != 4 || !(args[2].equals("quest") || args[2].equals("stage"))) {
-            sender.sendMessage(ChatColor.WHITE + "Usage: /slimequest complete <player> <quest/stage> <name>");
+            sender.sendMessage(ChatColor.WHITE + "用法: /slimequest complete <player> <quest/stage> <name>");
             return;
         }
 
@@ -40,7 +40,7 @@ public class Complete extends SubCommand {
         if (args[2].equals("quest")) { //quest
 
             if (!Quest.names.contains(args[3])) {
-                sender.sendMessage(ChatColor.RED + "Invalid quest!");
+                sender.sendMessage(ChatColor.RED + "无效的任务!");
                 return;
             }
 
@@ -48,18 +48,18 @@ public class Complete extends SubCommand {
             int targetID = Quest.ids.get(index);
 
             if (QuestData.check(target, targetID)) {
-                sender.sendMessage(ChatColor.RED + target.getName() + " has already completed that quest!");
+                sender.sendMessage(ChatColor.RED + target.getName() + " 已经完成了该任务!");
                 return;
             }
 
             Quest.quests.get(index).giveRewards(target, target.getInventory(), target.getInventory().getStorageContents());
             Quest.quests.get(index).giveUnlock(target, true);
-            sender.sendMessage(ChatColor.GREEN + "Completed quest " + args[3] + " for " + target.getName());
+            sender.sendMessage(ChatColor.GREEN + "完成的任务" + args[3] + " 对于 " + target.getName());
 
         } else if (args[2].equals("stage")) { //stage
 
             if (!QuestRegistry.stageNames.contains(args[3])) {
-                sender.sendMessage(ChatColor.RED + "Invalid stage!");
+                sender.sendMessage(ChatColor.RED + "无效阶段!");
                 return;
             }
 
@@ -73,7 +73,7 @@ public class Complete extends SubCommand {
                 }
             }
 
-            sender.sendMessage(ChatColor.GREEN + "Completed stage " + stage.getName() + " for " + target.getName());
+            sender.sendMessage(ChatColor.GREEN + "完成的阶段 " + stage.getName() + " 对于 " + target.getName());
         }
     }
 
