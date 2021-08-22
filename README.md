@@ -1,31 +1,21 @@
-# SlimeQuest
-This addon adds a quest book, and many quests to help guide and reward progression.
+# 粘液任务
+该附属添加了一本任务书，可以帮助新手快速度过前期并获取一定量的经验
 
-# Features
+# 下载
+release
 
-- Up to 7 stages of quests when using multiple addons
+# 汉化作者
+haiman233
 
-- Guide progression and reward players 
-
-# Download
-coming soon
-
-coming soon
-
-# Requirements
+# 需求
 Minecraft Version: 1.16+ (Paper recommended)
 
 https://papermc.io/downloads
 
-Slimefun Version: DEV 721+
+Slimefun版本: DEV 721+
 
 [![Build Status](https://thebusybiscuit.github.io/builds/TheBusyBiscuit/Slimefun4/master/badge.svg)](https://thebusybiscuit.github.io/builds/TheBusyBiscuit/Slimefun4/master/)
 
-CS-CoreLib Version: DEV 91+
+CS-CoreLib版本: DEV 91+
 
 [![Build Status](https://thebusybiscuit.github.io/builds/TheBusyBiscuit/CS-CoreLib/master/badge.svg)](https://thebusybiscuit.github.io/builds/TheBusyBiscuit/CS-CoreLib/master/)
-
-# Bugs/Suggestions
-Make a new issue or contact me on discord Riley#5911 
-
-I'm also in the slimefun discord @Riley
